@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Playlist - TuneX{% endblock %}
+
+{% block nav_library_active %}active{% endblock %} {# Assuming Create Playlist falls under 'Your Library' #}
+
+{% block extra_head %}
+<style>
+    /* Reusing auth form styles for consistency, can be moved to a shared CSS if preferred */
+    .form-container {
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: var(--card);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .form-container .form-group {
+        margin-bottom: 20px;
+    }
+    .form-container label {
+        display: block;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    .form-container input[type="text"] {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 4px;
+        border: 1px solid var(--secondary);
+        background-color: var(--background);
+        color: var(--text);
+        font-size: 16px;
+        transition: border-color 0.2s;
+    }
+    .form-container input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    .form-container .form-error-message { /* For Django form field errors */
+        color: #f87171; /* Error text color from login.css */
+        font-size: 0.8rem;
+        text-align: left;
+        margin-top: 5px;
+    }
+    .form-container .auth-button { /* Reusing button style */
+        width: 100%;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 500px;
+        background-color: var(--primary);
+        color: var(--text);
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+        margin-top: 10px;
+    }
+    .form-container .auth-button:hover {
+        background-color: var(--primary-hover);
+        transform: scale(1.02);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1 class="main-header">Create New Playlist</h1>
+
+    <div class="form-container">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="form-error-message">
+                        {% for error in form.name.errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="auth-button">Create Playlist</button>
+        </form>
+    </div>
+{% endblock %}

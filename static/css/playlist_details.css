@@ -1,0 +1,149 @@
+/* Styles specific to the playlist detail page */
+.playlist-header {
+    display: flex;
+    align-items: flex-end; /* Align items to bottom */
+    gap: 24px;
+    margin-bottom: 40px;
+    padding: 30px 0; /* Vertical padding for the header section */
+}
+.playlist-header-image {
+    width: 180px;
+    height: 180px;
+    background-color: #555; /* Fallback background */
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    flex-shrink: 0; /* Prevent image from shrinking */
+    border-radius: 4px; /* Playlists often have square images, not circular */
+}
+.playlist-header-info {
+    display: flex;
+    flex-direction: column;
+}
+.playlist-header-info .type {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.playlist-header-info .title {
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    line-height: 1.1; /* Adjust line height for large text */
+}
+.playlist-header-info .description {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+.playlist-header-info .stats {
+    font-size: 14px;
+    color: var(--text); /* Main text color for stats, not muted */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between stat items */
+}
+.playlist-header-info .stats .creator-name {
+    font-weight: 700; /* Bold creator name */
+}
+.playlist-header-info .stats .dot {
+    margin: 0 4px; /* Separator dot styling */
+}
+
+/* Styles for the track list within the playlist */
+/* This reuses some general .track-item styles but might have specifics for playlists */
+.playlist-tracks .track-item {
+     display: grid;
+     /* Adjust columns if needed, removing rank for now as per original CSS */
+     /* Columns: index number, image, track info (title/artist), duration */
+     /* Columns: index number, image, track info (title/artist), duration, icons */
+     grid-template-columns: [index] 16px [image] 40px [info] 1fr [duration] auto [icons] auto;
+     gap: 16px;
+     align-items: center;
+     padding: 8px; /* Padding inside each track item */
+     border-radius: 4px;
+     transition: background-color 0.2s;
+     cursor: pointer; /* Make it clear it's clickable */
+}
+.playlist-tracks .track-item:hover {
+    background-color: var(--secondary); /* Hover effect */
+}
+.playlist-tracks .track-number {
+    grid-column: index;
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.playlist-tracks .track-image {
+    grid-column: image;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px; /* Slightly rounded corners for track image */
+    overflow: hidden;
+    background-color: #333; /* Fallback for image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+}
+/* Placeholder icon for track image if no background-image is set (e.g. music note) */
+.playlist-tracks .track-image:not([style*="background-image"])::before {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: var(--text-muted); /* Color of the icon */
+    /* SVG mask for a music note icon */
+    mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>') no-repeat center center;
+    mask-size: contain;
+}
+.playlist-tracks .track-info {
+    grid-column: info;
+    overflow: hidden; /* Prevent text overflow */
+}
+.playlist-tracks .track-title {
+    font-size: 16px;
+    margin-bottom: 4px; /* Space between title and artist */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text); /* Main text color for title */
+}
+.playlist-tracks .track-artist {
+    font-size: 14px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.playlist-tracks .track-duration {
+    grid-column: duration;
+    color: var(--text-muted);
+    font-size: 14px;
+    text-align: right; /* Align duration to the right */
+    min-width: 40px; /* Ensure space for duration text */
+    white-space: nowrap;
+}
+
+/* Responsive adjustments for playlist details page */
+ @media (max-width: 768px) {
+    .playlist-header {
+        flex-direction: column; 
+        align-items: center; 
+        text-align: center;
+        gap: 16px; 
+        padding: 20px 0; /
+    }
+    .playlist-header-image {
+        width: 150px;
+        height: 150px;
+    }
+    .playlist-header-info .title {
+        font-size: 32px;
+    }
+    .playlist-header-info .stats {
+        justify-content: center; 
+    }
+ }

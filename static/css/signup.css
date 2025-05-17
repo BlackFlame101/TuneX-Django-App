@@ -1,0 +1,156 @@
+/* Styles specific to standalone auth pages (from signup.html) */
+/* Similar to login.css, ensure these styles are scoped or consolidated
+   if they overlap with your main style.css. */
+
+/* :root variables should ideally be in a global CSS file.
+   Included here as they were in the original <style> tag. */
+/*
+:root {
+    --background: #121212;
+    --card: #181818;
+    --card-hover: #282828;
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --secondary: #404040;
+    --border: #282828;
+    --text: #ffffff;
+    --text-muted: #b3b3b3;
+    --login-card-bg: #282828;
+}
+*/
+/* Assuming :root variables are globally defined in style.css */
+
+/* Body styling specific to signup page context */
+/* Apply class="signup-page-body" to <body> in signup.html */
+body.signup-page-body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; /* Copied from login.css, ensure consistency */
+    background-color: var(--background); /* Ensure dark background */
+    color: var(--text); /* Copied from login.css */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    /* Override grid layout from main style.css if it was causing issues */
+    /* These grid properties might not be needed if display:flex is sufficient for centering */
+    /* grid-template-rows: 1fr; */
+    /* grid-template-columns: 1fr; */
+    /* grid-template-areas: "main"; */ /* This implies a grid container named "main" */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+/* Re-use auth styles from login.css or main style.css if they are identical */
+/* .auth-container, .auth-card are assumed to be styled globally or in login.css */
+
+/* Adjust logo size and margin for auth pages (if not globally defined) */
+.auth-logo { /* This was in signup.html, assuming it's similar to login.html's */
+    max-width: 150px;
+    margin-bottom: 30px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Style for messages (e.g., errors, info) */
+.message-list { /* Copied from login.css */
+    margin-bottom: 1.5rem;
+    padding: 0;
+    list-style: none;
+}
+.message-item { /* Copied from login.css */
+    background-color: #4b1d1d; /* Dark red for errors */
+    color: #f87171; /* Light red text */
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Style for potential Django form errors */
+.errorlist { /* For <ul> errors from Django forms, copied from login.css */
+    list-style: none;
+    padding: 0;
+    color: #f87171;
+    font-size: 0.8rem;
+    text-align: left;
+    /* margin-top: -10px; */ /* Original: might be too aggressive, adjust as needed */
+    margin-top: 5px; /* More standard spacing */
+    margin-bottom: 10px;
+}
+.form-error-message { /* For individual field errors, copied from login.css */
+    color: #f87171;
+    font-size: 0.8rem;
+    text-align: left;
+    /* margin-top: -10px; */ /* Original: adjust as needed */
+    margin-top: 5px; /* Space below input, before error */
+    margin-bottom: 10px; /* Space after error */
+}
+
+/* Ensure .auth-form, input fields, .auth-button, .auth-switch-link
+   are styled consistently with login.html. If those styles are in
+   your global style.css or login.css (and login.css is loaded or its
+   styles are merged), you might not need to repeat them here.
+   For this extraction, I'm assuming they might be needed if signup.css is standalone.
+*/
+
+.auth-form .form-group { /* From login.css */
+    margin-bottom: 20px;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] { /* From login.css */
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--secondary);
+    background-color: var(--background);
+    color: var(--text);
+    font-size: 16px;
+    transition: border-color 0.2s;
+    margin-bottom: 0; /* If form-group handles spacing */
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="email"]:focus,
+.auth-form input[type="password"]:focus { /* From login.css */
+    outline: none;
+    border-color: var(--primary);
+}
+
+.auth-button { /* From login.css */
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 500px;
+    background-color: var(--primary);
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 10px;
+}
+
+.auth-button:hover { /* From login.css */
+    background-color: var(--primary-hover);
+    transform: scale(1.02);
+}
+
+.auth-switch-link { /* From login.css */
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.auth-switch-link a { /* From login.css */
+    color: var(--text);
+    font-weight: 600;
+    text-decoration: underline;
+    margin-left: 5px;
+}
+
+.auth-switch-link a:hover { /* From login.css */
+    color: var(--primary);
+}

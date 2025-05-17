@@ -1,0 +1,7 @@
+{% if playlists %}
+    {% for playlist in playlists %}
+        <a href="{% url 'user_playlist_detail' playlist.id %}" class="playlist-link">{{ playlist.name }}</a>
+    {% endfor %}
+{% else %}
+    <p style="color: var(--text-muted); padding: 0 16px;">No playlists yet.</p>
+{% endif %}

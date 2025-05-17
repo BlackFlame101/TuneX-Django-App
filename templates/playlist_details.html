@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %} 
+
+{% block title %}{{ playlist.title|default:"Playlist" }} - TuneX{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/playlist_details.css' %}"> 
+    <script src="{% static 'js/playlist_details.js' %}"></script>
+
+{% endblock %}
+
+
+
+
+
+{% block content %}
+
+    {% if playlist %}
+        <div class="playlist-header">
+            <div class="playlist-header-image"
+                 {% if playlist.picture_big %} style="background-image: url('{{ playlist.picture_big }}');"
+                 {% elif playlist.picture_medium %} style="background-image: url('{{ playlist.picture_medium }}');"
+                 {% else %} style="background-image: url('https://placehold.co/180x180/555555/EEEEEE?text=?');" {% endif %}
+            ></div>
+            <div class="playlist-header-info">
+                <div class="type">Playlist</div>
+                <h1 class="title">{{ playlist.title }}</h1>
+                {% if playlist.description %}
+                    <div class="description">{{ playlist.description }}</div>
+                {% endif %}
+                <div class="stats">
+                    <span class="creator-name">{{ playlist.creator_name|default:"Deezer" }}</span>
+                    {% if playlist.fans %}<span class="dot">•</span> {{ playlist.fans|intcomma }} fans{% endif %}
+                    {% if playlist.nb_tracks %}<span class="dot">•</span> {{ playlist.nb_tracks }} songs{% endif %}
+                    {% if playlist.duration_total_formatted and playlist.duration_total_formatted != "0:00" %}
+                        <span class="dot">•</span> about {{ playlist.duration_total_formatted }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# Display Playlist Tracks #}
+        <div class="content-section playlist-tracks">
+             {# No separate header needed, tracks are the main content #}
+             {% if playlist.tracks %}
+                <div class="track-list">
+                    {% for track in playlist.tracks %}
+                        <div class="track-item" onclick="playTrack('{{ track.id }}', '{{ track.title|escapejs }}', '{{ track.artist_name|escapejs }}', '{{ track.album_cover_medium }}', '{{ track.preview_url }}')">
+                            <div class="track-number">{{ forloop.counter }}</div>
+                            <div class="track-image"
+                                 {% if track.album_cover_medium %} style="background-image: url('{{ track.album_cover_medium }}');"
+                                 {% else %} style="background-image: url('https://placehold.co/40x40/333333/CCCCCC?text=?');" {% endif %}
+                            ></div>
+                            <div class="track-info">
+                                <div class="track-title">{{ track.title }}</div>
+                                <div class="track-artist">{{ track.artist_name }}</div> {# Show artist for each track #}
+                            </div>
+                            <div class="track-duration">{{ track.duration_formatted }}</div>
+                            <div class="track-icons" style="display: flex; align-items: center; gap: 10px; grid-column: icons;">
+                                {# Like Icon #}
+                                <button class="like-button {% if track.is_liked %}active{% endif %}" data-track-id="{{ track.id }}" onclick="event.stopPropagation();" title="{% if track.is_liked %}Unlike{% else %}Like{% endif %}">
+                                    <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                {# Add to Playlist Icon #}
+                                <button class="add-to-playlist-button" 
+                                        data-track-id="{{ track.id }}" 
+                                        onclick="event.stopPropagation();" 
+                                        title="Add to playlist">
+                                    <svg class="add-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+             {% else %}
+                 <p style="color: var(--text-muted);">This playlist appears to be empty.</p>
+             {% endif %}
+        </div>
+
+    {% else %}
+         {# Fallback if playlist data couldn't be loaded by the view #}
+         <h1 class="main-header">Playlist Not Found</h1>
+         <p>Sorry, the playlist you were looking for could not be found or loaded.</p>
+    {% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+{% endblock %}

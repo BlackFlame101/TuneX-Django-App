@@ -1,0 +1,32 @@
+/* Styles specific to index.html - horizontal scroll container */
+.horizontal-scroll-container {
+    display: flex; /* Arrange children (cards) in a row */
+    flex-direction: row; /* Explicitly set direction to row */
+    overflow-x: auto;  /* Enable horizontal scrolling */
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    padding-bottom: 20px; /* Add some space for the scrollbar */
+    gap: 24px; /* Use gap for spacing between cards */
+    /* Optional: Hide scrollbar visually but keep functionality */
+    /* scrollbar-width: none; /* Firefox */
+    /* -ms-overflow-style: none;  /* IE and Edge */
+}
+ .horizontal-scroll-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for WebKit browsers */
+}
+
+/* Ensure artist cards have a defined width so they don't shrink too much */
+.horizontal-scroll-container .artist-card {
+    width: 160px; /* Set a fixed width for each card */
+    flex-shrink: 0; /* Prevent cards from shrinking */
+    /* Inherits padding, background etc. from main style.css */
+}
+
+ /* Adjust card width on smaller screens if needed */
+ @media (max-width: 768px) {
+    .horizontal-scroll-container .artist-card {
+        width: 140px; /* Slightly smaller cards on mobile */
+    }
+     .horizontal-scroll-container {
+        gap: 16px; /* Reduce gap on smaller screens */
+     }
+ }

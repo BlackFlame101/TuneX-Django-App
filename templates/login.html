@@ -1,0 +1,65 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TuneX</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Main styles (includes variables) #}
+    <link rel="icon" href="{% static 'TuneXIcon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"> {# Login specific styles for centering #}
+</head>
+{# ADDED class="login-page-body" to body tag #}
+<body class="login-page-body">
+
+<div class="auth-container">
+    <div class="auth-card">
+        <img src="{% static 'logo1.png' %}" alt="TuneX Logo" class="auth-logo"
+              onerror="this.onerror=null; this.src='https://placehold.co/150x50/282828/FFFFFF?text=TuneX';">
+
+        <h1>Log in to TuneX</h1>
+
+        {% if messages %}
+            <ul class="message-list">
+                {% for message in messages %}
+                    <li class="message-item message-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+             <div class="message-item message-error"> 
+                {{ form.non_field_errors }}
+             </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}" class="auth-form">
+            {% csrf_token %} 
+
+            <div class="form-group">
+                <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username" placeholder="Username or Email" value="{{ username|default:'' }}">
+                 {% if form.username.errors %}
+                    <div class="form-error-message">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" autocomplete="current-password" required id="id_password" placeholder="Password">
+                 {% if form.password.errors %}
+                     <div class="form-error-message">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <input type="hidden" name="next" value="{{ request.GET.next | default:'/' }}">
+
+            <button type="submit" class="auth-button">Log In</button>
+        </form>
+
+        <p class="auth-switch-link">
+            Don't have an account?
+            <a href="{% url 'signup' %}">Sign up for TuneX</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

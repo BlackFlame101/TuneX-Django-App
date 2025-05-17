@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ playlist.name|default:"Playlist" }} - TuneX{% endblock %}
+
+{% block nav_library_active %}active{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/playlist_details.css' %}">
+    <style>
+        /* Ensure playlist-header-image styles from playlist_details.css are applied */
+        /* or define them here if they are different from the generic one */
+        .playlist-header-image { /* This class is used if playlist.cover_image_url exists */
+            width: 180px;
+            height: 180px;
+            background-color: var(--secondary); /* Fallback if image fails to load */
+            border-radius: 4px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            flex-shrink: 0;
+        }
+
+        .playlist-header-image-generic { /* This class is used for the SVG fallback */
+            width: 180px;
+            height: 180px;
+            background-color: var(--secondary); 
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            flex-shrink: 0;
+        }
+        .playlist-header-image-generic svg {
+            width: 80px; 
+            height: 80px;
+            stroke: var(--text-muted);
+        }
+        .track-item .remove-song-btn {
+            background-color: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 15px; 
+            display: none; 
+        }
+        .track-item:hover .remove-song-btn {
+            display: inline-block; 
+        }
+        .track-item .remove-song-btn:hover {
+            color: var(--primary);
+        }
+        .track-item .remove-song-btn svg {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if playlist %}
+        <div class="playlist-header">
+            {% if playlist.cover_image_url %}
+                <div class="playlist-header-image" 
+                     style="background-image: url('{{ playlist.cover_image_url }}');"
+                     onerror="this.style.backgroundImage = 'url(\'https://placehold.co/180x180/555555/CCCCCC?text=?\')';">
+                     {# Fallback via JS if image fails to load, you can also put the SVG here as innerHTML #}
+                </div>
+            {% else %}
+                <div class="playlist-header-image-generic">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>
+                        <path d="M4 6L20 6" stroke-width="1.5"></path><path d="M4 12L20 12" stroke-width="1.5"></path><path d="M4 18L14 18" stroke-width="1.5"></path>
+                    </svg>
+                </div>
+            {% endif %}
+            <div class="playlist-header-info">
+                <div class="type">Playlist</div>
+                <h1 class="title">{{ playlist.name }}</h1>
+                <div class="stats">
+                    <span class="creator-name">{{ playlist.user.username }}</span>
+                    {% with songs_count=playlist_songs.count %}
+                        {% if songs_count %}<span class="dot">•</span> {{ songs_count }} song{{ songs_count|pluralize }}{% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section playlist-tracks">
+             {% if playlist_songs %}
+                <div class="track-list">
+                    {% for song in playlist_songs %}
+                        <div class="track-item" 
+                             data-track-id="{{ song.deezer_id }}" 
+                             data-track-title="{{ song.title|escapejs }}"
+                             data-track-artist="{{ song.artist_name|escapejs }}"
+                             data-track-imageurl="{{ song.album_cover_url }}"
+                             data-track-duration-formatted="{{ song.duration_formatted }}"
+                             data-is-liked="{{ song.is_liked|yesno:'true,false' }}"
+                             onclick="handlePlayTrackWithFreshUrl('{{ song.deezer_id }}', '{{ song.title|escapejs }}', '{{ song.artist_name|escapejs }}', '{{ song.album_cover_url }}', '{{ song.duration_formatted }}')">
+                            
+                            <div class="track-number">{{ forloop.counter }}</div>
+                            <div class="track-image"
+                                 {% if song.album_cover_url %} style="background-image: url('{{ song.album_cover_url }}');"
+                                 {% else %} style="background-image: url('https://placehold.co/40x40/333333/CCCCCC?text=?');" {% endif %}
+                            ></div>
+                            <div class="track-info">
+                                <div class="track-title">{{ song.title }}</div>
+                                <div class="track-artist">{{ song.artist_name }}</div>
+                            </div>
+                            <div class="track-duration">
+                                {{ song.duration_formatted }}
+                            </div>
+                            <div class="track-icons" style="display: flex; align-items: center; gap: 10px;">
+                                <button class="like-button {% if song.is_liked %}active{% endif %}" 
+                                        data-track-id="{{ song.deezer_id }}" 
+                                        onclick="event.stopPropagation();" 
+                                        title="{% if song.is_liked %}Unlike{% else %}Like{% endif %} this song">
+                                    <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                <button class="add-to-playlist-button" 
+                                        data-track-id="{{ song.deezer_id }}" 
+                                        onclick="event.stopPropagation();" 
+                                        title="Add to playlist">
+                                    <svg class="add-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button class="remove-song-btn" data-song-id="{{ song.deezer_id }}" data-playlist-id="{{ playlist.id }}" title="Remove from playlist" onclick="event.stopPropagation();">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+             {% else %}
+                 <p style="color: var(--text-muted);">This playlist is empty. Add some songs!</p>
+             {% endif %}
+        </div>
+
+    {% else %}
+         <h1 class="main-header">Playlist Not Found</h1>
+         <p>Sorry, this playlist could not be found.</p>
+    {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const removeButtons = document.querySelectorAll('.remove-song-btn');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function(event) { 
+            event.stopPropagation(); 
+            const songId = this.dataset.songId;
+            const playlistId = this.dataset.playlistId;
+            
+            if (!confirm('Are you sure you want to remove this song from the playlist?')) {
+                return;
+            }
+
+            fetch(`/playlist/${playlistId}/remove_song/`, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'X-CSRFToken': '{{ csrf_token }}' 
+                },
+                body: JSON.stringify({ deezer_id: songId }) 
+            })
+            .then(response => { 
+                if (!response.ok) {
+                    return response.json().catch(() => {
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }).then(errData => {
+                        throw new Error(errData.error || `Server error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    this.closest('.track-item').remove();
+                    if (typeof showFloatingNotification === 'function') {
+                        showFloatingNotification(data.message || 'Song removed successfully.', 'success');
+                    } else {
+                        alert(data.message || 'Song removed successfully.');
+                    }
+                    // Optionally, reload the page to see the updated cover image immediately
+                    // window.location.reload(); 
+                } else {
+                    if (typeof showFloatingNotification === 'function') {
+                        showFloatingNotification('Error removing song: ' + (data.error || data.message || 'Unknown error'), 'error');
+                    } else {
+                        alert('Error removing song: ' + (data.error || data.message || 'Unknown error'));
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error removing song from playlist:', error);
+                if (typeof showFloatingNotification === 'function') {
+                    showFloatingNotification('Failed to remove song: ' + error.message, 'error');
+                } else {
+                    alert('Failed to remove song: ' + error.message);
+                }
+            });
+        });
+    });
+
+    if (typeof buildTracksListFromPage === "function") {
+        buildTracksListFromPage('.playlist-tracks .track-item', 'User Playlist Details');
+    }
+
+    document.querySelectorAll('.like-button').forEach(button => {
+        if (typeof handleLikeSong === 'function') {
+            button.addEventListener('click', handleLikeSong);
+        } else {
+            console.warn('handleLikeSong function not found. Like functionality might not work.');
+        }
+        
+        const trackItem = button.closest('.track-item');
+        const svgIcon = button.querySelector('svg.heart-icon');
+
+        if (trackItem && trackItem.dataset.isLiked !== undefined && svgIcon) {
+            if (trackItem.dataset.isLiked === 'true') {
+                svgIcon.setAttribute('fill', 'var(--primary)'); 
+                svgIcon.setAttribute('stroke', 'var(--primary)'); 
+                button.classList.add('active');
+                button.title = "Unlike this song";
+            } else {
+                svgIcon.setAttribute('fill', 'none'); 
+                svgIcon.setAttribute('stroke', 'currentColor');
+                button.classList.remove('active');
+                button.title = "Like this song";
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

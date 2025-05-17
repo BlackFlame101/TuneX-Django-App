@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Search - TuneX{% endblock %}
+
+{% block nav_search_active %}active{% endblock %}
+
+{% block extra_head %}
+<script src="{% static 'js/search.js' %}" defer></script> 
+<style>
+    /* Style for the anchor tags wrapping the browse cards */
+    .card-link-wrapper {
+        text-decoration: none; /* Removes the underline */
+        color: inherit; /* Ensures the text color is inherited from parent, not default link color */
+        display: block; /* Makes the entire area of the card clickable if needed */
+    }
+    .card-link-wrapper:hover {
+        text-decoration: none; /* Also remove underline on hover if browser adds it */
+    }
+    /* Optional: if you want specific styles for live results, you could create search_results.css */
+</style>
+{% endblock %}
+
+
+{% block content %}
+    <h1 class="main-header">Search</h1>
+
+    <div class="search-bar-container">
+         <form method="get" action="{% url 'search' %}" id="search-form">
+             <span class="search-icon">
+                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+             </span>
+            <input type="text" name="q" class="search-input" id="search-input-field" placeholder="What do you want to listen to?" value="{{ query|default:'' }}" autofocus>
+         </form>
+    </div>
+
+    <div class="search-results-container" id="live-search-results-container">
+        {% if not query and not results_from_category_click %} {# Show browse only if no query and not coming from a category click #}
+            <h2 class="section-header">Browse all</h2>
+             <div class="card-grid browse-cards"> 
+                 <a href="https://www.deezer.com/explore/podcasts" target="_blank" class="card-link-wrapper">
+                    <div class="card" style="background-color: #e13300;"> 
+                        <div class="card-title" style="font-size: 20px; padding-top: 10px;">Podcasts</div> 
+                    </div>
+                 </a>
+                 <a href="https://www.deezer.com/us/personalized" target="_blank" class="card-link-wrapper">
+                    <div class="card" style="background-color: #1e3264;"> 
+                        <div class="card-title" style="font-size: 20px; padding-top: 10px;">Made For You</div> 
+                    </div>
+                 </a>
+                 <a href="https://www.deezer.com/explore/charts" target="_blank" class="card-link-wrapper">
+                    <div class="card" style="background-color: #8d67ab;"> 
+                        <div class="card-title" style="font-size: 20px; padding-top: 10px;">Charts</div> 
+                    </div>
+                 </a>
+                 <a href="{% url 'new_releases' %}" class="card-link-wrapper"> 
+                    <div class="card" style="background-color: #ba5d07;"> 
+                        <div class="card-title" style="font-size: 20px; padding-top: 10px;">New Releases</div> 
+                    </div>
+                 </a>
+             </div>
+        {% elif api_error %}
+             <p style="color: var(--text-muted);">Could not perform search due to an API error.</p>
+        {% elif not has_results and query %}
+             <p style="color: var(--text-muted);">No results found for "{{ query }}". Try searching for something else.</p>
+        {% endif %}
+        
+         {% if results_from_category_click %}
+            {% if new_release_albums %}
+                <h2 class="section-header">New Releases</h2>
+                <div class="card-grid album-grid"> 
+                    {% for album in new_release_albums %}
+                        <div class="card album-card" data-album-id="{{ album.id }}"> 
+                            <div class="card-image" 
+                                 style="background-image: url('{{ album.picture_medium|default:'https://placehold.co/180x180/555555/CCCCCC?text=?' }}');">
+                            </div>
+                            <div class="card-title">{{ album.title }}</div>
+                            <div class="card-subtitle">{{ album.artist_name }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+{% endblock %}

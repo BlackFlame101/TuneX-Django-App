@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Liked Songs - TuneX{% endblock %}
+
+{% block nav_library_active %}active{% endblock %}
+
+{% block extra_head %}
+    <style>
+        .heart-icon {
+            fill: #1DB954; 
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .heart-icon:hover {
+            transform: scale(1.1);
+        }
+        .like-button {
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .like-button:hover {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .like-button.active {
+            color:rgb(58, 129, 246); 
+        }
+        .like-button.active .heart-icon {
+            fill:rgb(58, 129, 246);
+        }
+        .like-button:not(.active) .heart-icon {
+            fill: none;
+            stroke: currentColor;
+        }
+    </style>
+{% endblock %}
+
+{# Add class to body for easier JS targeting if needed, though querySelector on h1 might be enough #}
+{% block body_class %}liked-songs-page{% endblock %}
+
+{% block content %}
+    <h1 class="main-header">Liked Songs</h1>
+
+    {% if liked_songs %}
+        <div class="track-list">
+            {% for song in liked_songs %}
+                <div class="track-item" 
+                     data-track-id="{{ song.deezer_id }}" 
+                     data-track-title="{{ song.title|escapejs }}"
+                     data-track-artist="{{ song.artist_name|escapejs }}"
+                     data-track-imageurl="{{ song.album_cover_url }}"
+                     {# data-track-audiourl is removed - will be fetched fresh #}
+                     data-track-duration-formatted="{{ song.duration_formatted }}"
+                     data-is-liked="{{ song.is_liked|yesno:'true,false' }}"
+                     {# MODIFIED ONCLICK to use the new generic handler #}
+                     onclick="handlePlayTrackWithFreshUrl('{{ song.deezer_id }}', '{{ song.title|escapejs }}', '{{ song.artist_name|escapejs }}', '{{ song.album_cover_url }}', '{{ song.duration_formatted }}')">
+                    
+                    <div class="track-number">{{ forloop.counter }}</div>
+                    <div class="track-image"
+                         {% if song.album_cover_url %}
+                            style="background-image: url('{{ song.album_cover_url }}');"
+                         {% else %}
+                            style="background-image: url('https://placehold.co/40x40/333333/CCCCCC?text=?');"
+                         {% endif %}
+                    ></div>
+                    <div class="track-info">
+                        <div class="track-title">{{ song.title }}</div>
+                        <div class="track-artist">{{ song.artist_name }}</div>
+                    </div>
+                    <div class="track-meta" style="margin-left: auto; display: flex; align-items: center; gap: 10px; padding-left:15px; z-index:5;">
+                        <div class="track-duration">{{ song.duration_formatted }}</div>
+                        <button class="like-button active" {# Liked songs are always liked initially on this page #}
+                                data-track-id="{{ song.deezer_id }}" 
+                                onclick="event.stopPropagation();" 
+                                title="Unlike this song">
+                            <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <button class="add-to-playlist-button" 
+                                data-track-id="{{ song.deezer_id }}" 
+                                onclick="event.stopPropagation();" 
+                                title="Add to playlist">
+                            <svg class="add-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted);">You haven't liked any songs yet. Discover and like songs to see them here!</p>
+    {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+{# Removed the old inline script for unlike functionality, as shared_player.js handleLikeSong covers it globally #}
+{# The DOMContentLoaded in shared_player.js will call buildTracksListFromPage for this page. #}
+{% endblock %}
