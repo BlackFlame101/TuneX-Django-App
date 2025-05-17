@@ -47,9 +47,6 @@ TuneX est une application web développée pour le cours EMSI 3IIR20, simulant l
 * **Version Control :** Git & GitHub.
 * **API Externe :** API Deezer.
 
-## Structure du Projet
-
-TuneX/ (Répertoire Racine - C:\Users\benou\djangoenfi\TuneX\Back-End\TuneX)├── manage.py├── TuneX/ (Configuration Projet)│   ├── settings.py, urls.py, ...├── music/ (Application Django principale)│   ├── models.py, views.py, urls.py, forms.py, signals.py, ...├── static/ (Fichiers Statiques)│   ├── css/ (style.css, login.css, ...)│   ├── js/ (shared_player.js, search.js, ...)│   └── TuneXIcon.png, logo1.png├── templates/ (Modèles HTML)│   ├── base.html, index.html, login.html, search.html, ...├── .gitignore└── README.md
 ## Installation
 
 1.  **Cloner le dépôt (si sur GitHub) :**
