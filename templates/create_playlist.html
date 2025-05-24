@@ -3,11 +3,11 @@
 
 {% block title %}Create Playlist - TuneX{% endblock %}
 
-{% block nav_library_active %}active{% endblock %} {# Assuming Create Playlist falls under 'Your Library' #}
+{% block nav_library_active %}active{% endblock %} 
 
 {% block extra_head %}
 <style>
-    /* Reusing auth form styles for consistency, can be moved to a shared CSS if preferred */
+    
     .form-container {
         max-width: 500px;
         margin: 40px auto;
@@ -40,13 +40,13 @@
         outline: none;
         border-color: var(--primary);
     }
-    .form-container .form-error-message { /* For Django form field errors */
-        color: #f87171; /* Error text color from login.css */
+    .form-container .form-error-message { 
+        color: #f87171; 
         font-size: 0.8rem;
         text-align: left;
         margin-top: 5px;
     }
-    .form-container .auth-button { /* Reusing button style */
+    .form-container .auth-button { 
         width: 100%;
         padding: 14px 20px;
         border: none;

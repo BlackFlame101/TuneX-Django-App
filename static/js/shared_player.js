@@ -1,4 +1,3 @@
-// --- Shared Player State (initialized from window object set in base.html) ---
 let currentAudio = window.currentAudio || null;
 let isPlaying = window.isPlaying || false;
 let currentTrackId = window.currentTrackId || null;
@@ -9,7 +8,7 @@ let isRepeatActive = window.isRepeatActive || false;
 let originalTracksList = window.originalTracksList || [];
 let unmutedVolume = window.unmutedVolume || 0.7; 
 
-// --- Floating Notification System ---
+
 function showFloatingNotification(message, type = 'info') {
     const messagesContainer = document.querySelector('.messages-container');
     if (!messagesContainer) {
@@ -59,7 +58,7 @@ function getNotificationColor(type) {
     }
 }
 
-// --- Helper Functions ---
+
 function formatTime(seconds) {
     if (isNaN(seconds) || seconds < 0) return "0:00";
     const minutes = Math.floor(seconds / 60);
@@ -84,7 +83,7 @@ function getCSRFToken() {
     return csrfToken;
 }
 
-// --- UI Update Functions ---
+
 function updatePlayerUI(playing) {
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
@@ -121,7 +120,7 @@ function updateVolumeUI() {
     }
 }
 
-// --- Generic function to play a track, fetching a fresh URL if needed ---
+
 async function handlePlayTrackWithFreshUrl(deezerId, title, artistName, imageUrl, durationFormatted) {
     console.log(`SharedPlayer: handlePlayTrackWithFreshUrl called for ID: ${deezerId}, Title: ${title}`);
     
@@ -155,20 +154,20 @@ async function handlePlayTrackWithFreshUrl(deezerId, title, artistName, imageUrl
 }
 
 
-// --- Main Playback Function (window.playTrackGlobal) ---
-// This function is now primarily responsible for the actual audio element interaction.
+
+
 function playTrackGlobal(id, title, artistName, imageUrl, audioUrl, durationFormatted = "0:00") {
     console.log(`SharedPlayer: playTrackGlobal called! ID: ${id}, Title: ${title}, AudioURL (raw): "${audioUrl}", Duration: ${durationFormatted}`);
 
     const trackIndex = window.tracksList.findIndex(track => String(track.id) === String(id));
     if (trackIndex !== -1) {
         window.currentTrackIndex = trackIndex;
-        currentTrackIndex = trackIndex; // Sync local
+        currentTrackIndex = trackIndex; 
     } else {
-        // This can happen if tracksList is not yet populated for the current page context
-        // or if the track being played isn't in the list (e.g., a one-off play button).
+        
+        
         console.warn(`SharedPlayer: Track ${id} ('${title}') not found in current window.tracksList. Playback will proceed but next/prev might be affected.`);
-        window.currentTrackIndex = -1; // Explicitly set to -1 if not found
+        window.currentTrackIndex = -1; 
         currentTrackIndex = -1;
     }
 
@@ -211,7 +210,7 @@ function playTrackGlobal(id, title, artistName, imageUrl, audioUrl, durationForm
         if (totalTimeEl) totalTimeEl.textContent = durationFormatted || formatTime(0);
         window.currentTrackId = id;
         currentTrackId = id;
-        // Notification is handled by the caller (e.g., handlePlayTrackWithFreshUrl) if it decides URL is bad
+        
         return;
     }
     
@@ -272,7 +271,7 @@ function playTrackGlobal(id, title, artistName, imageUrl, audioUrl, durationForm
         });
 }
 
-// --- Audio Event Handlers ---
+
 function updateProgress() {
     if (!window.currentAudio || isNaN(window.currentAudio.duration) || window.currentAudio.duration <= 0) return;
     const percentage = (window.currentAudio.currentTime / window.currentAudio.duration) * 100;
@@ -296,8 +295,8 @@ function handleTrackEnd() {
     const activeTrackList = window.tracksList || [];
     const currentIdx = window.currentTrackIndex !== -1 ? window.currentTrackIndex : -1;
     if (window.isRepeatActive && window.currentTrackId && currentIdx !== -1 && activeTrackList[currentIdx] && window.currentAudio && window.currentAudio.loop) {
-        // If loop is true, browser handles repeat, so we don't need to do anything here for single track repeat.
-        // For "repeat playlist", that logic is in playNextTrack.
+        
+        
         console.log("SharedPlayer: Single track repeat (loop=true) handled by browser.");
         return; 
     }
@@ -342,7 +341,7 @@ function handleAudioError(e) {
 function handleAudioPlay() { updatePlayerUI(true); }
 function handleAudioPause() { updatePlayerUI(false); }
 
-// --- Navigation and Control Functions ---
+
 function playNextTrack() {
     const activeTrackList = window.tracksList || [];
     if (activeTrackList.length === 0) {
@@ -352,7 +351,7 @@ function playNextTrack() {
     }
     let nextIndex = (window.currentTrackIndex !== -1 ? window.currentTrackIndex : -1) + 1;
     if (nextIndex >= activeTrackList.length) {
-        if (window.isRepeatActive && activeTrackList.length > 0) { // If repeat playlist is active
+        if (window.isRepeatActive && activeTrackList.length > 0) { 
             nextIndex = 0;
             console.log("SharedPlayer: Reached end, looping to start (repeat playlist).");
         } else { 
@@ -366,8 +365,8 @@ function playNextTrack() {
     
     const nextTrack = activeTrackList[nextIndex];
     if (nextTrack) {
-        // Determine if we need to fetch a fresh URL (user playlist or liked songs context)
-        // A simple heuristic: if the audioUrl in tracksList is null or empty, fetch fresh.
+        
+        
         if (!nextTrack.audioUrl || nextTrack.audioUrl === 'null' || nextTrack.audioUrl === 'None') {
             console.log(`SharedPlayer: Next track "${nextTrack.title}" has no/stale URL in list, fetching fresh.`);
             handlePlayTrackWithFreshUrl(nextTrack.id, nextTrack.title, nextTrack.artist, nextTrack.imageUrl, nextTrack.duration_formatted);
@@ -422,9 +421,9 @@ function togglePlayPause() {
             const trackToPlayIndex = window.currentTrackIndex !== -1 ? window.currentTrackIndex : 0;
             const trackToPlay = activeTrackList[trackToPlayIndex];
             if (trackToPlay) {
-                // Determine if fresh URL fetch is needed
+                
                 if (document.querySelector('.playlist-tracks .track-item[data-track-id="' + trackToPlay.id + '"]') || 
-                    document.querySelector('body.liked-songs-page .track-item[data-track-id="' + trackToPlay.id + '"]')) { // Add class to body of liked_songs.html
+                    document.querySelector('body.liked-songs-page .track-item[data-track-id="' + trackToPlay.id + '"]')) { 
                      handlePlayTrackWithFreshUrl(trackToPlay.id, trackToPlay.title, trackToPlay.artist, trackToPlay.imageUrl, trackToPlay.duration_formatted);
                 } else {
                     playTrackGlobal(trackToPlay.id, trackToPlay.title, trackToPlay.artist, trackToPlay.imageUrl, trackToPlay.audioUrl, trackToPlay.duration_formatted);
@@ -464,7 +463,7 @@ function handleProgressBarClick(e) {
     }
 }
 
-// --- Track List Building (Global Function) ---
+
 function buildTracksListFromPage(selector, pageType = "generic") {
     let newTracks = [];
     console.log(`SharedPlayer: Building tracks list for ${pageType} using selector: ${selector}`);
@@ -482,10 +481,10 @@ function buildTracksListFromPage(selector, pageType = "generic") {
         trackData.duration_formatted = trackElement.dataset.trackDurationFormatted || trackElement.querySelector('.track-duration')?.textContent.trim() || "0:00";
         trackData.is_liked = trackElement.dataset.isLiked === 'true';
         
-        // For User Playlists and Liked Songs, we fetch URL on demand, so audioUrl in tracksList can be null initially.
-        // For other pages (search, charts), the onclick should contain playTrackGlobal with the direct (fresh) URL.
+        
+        
         if (pageType === 'User Playlist Details' || pageType === 'Liked Songs Page') {
-            trackData.audioUrl = null; // Will be fetched by handlePlayTrackWithFreshUrl
+            trackData.audioUrl = null; 
         } else if (onclickAttr && onclickAttr.includes('playTrackGlobal')) {
              try { 
                 const regex = /playTrackGlobal\s*\(\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*['"]?([^'"\s,)]*)['"]?/
@@ -501,7 +500,7 @@ function buildTracksListFromPage(selector, pageType = "generic") {
                 trackData.audioUrl = null;
             }
         } else {
-            // Fallback if no specific parsing for the page type and no onclick with playTrackGlobal
+            
             trackData.audioUrl = trackElement.dataset.trackAudiourl || null; 
         }
 
@@ -513,7 +512,7 @@ function buildTracksListFromPage(selector, pageType = "generic") {
     });
 
     window.tracksList = [...newTracks];
-    window.originalTracksList = [...newTracks]; // Update original list as well
+    window.originalTracksList = [...newTracks]; 
     tracksList = window.tracksList; 
     originalTracksList = window.originalTracksList; 
 
@@ -529,7 +528,7 @@ function buildTracksListFromPage(selector, pageType = "generic") {
 }
 
 
-// --- Shuffle and Repeat Logic ---
+
 function toggleShuffle() {
     const shuffleButton = document.querySelector('.control-button[title="Shuffle"]');
     window.isShuffleActive = !window.isShuffleActive;
@@ -538,7 +537,7 @@ function toggleShuffle() {
         if (shuffleButton) shuffleButton.classList.add('active');
         if ((!window.originalTracksList || window.originalTracksList.length === 0) && window.tracksList && window.tracksList.length > 0) {
             window.originalTracksList = [...window.tracksList];
-            // originalTracksList = window.originalTracksList; // Redundant
+            
         }
         _shuffleCurrentTracksList();
         showFloatingNotification("Shuffle enabled", 'info');
@@ -546,7 +545,7 @@ function toggleShuffle() {
         if (shuffleButton) shuffleButton.classList.remove('active');
         if (window.originalTracksList && window.originalTracksList.length > 0) {
             window.tracksList = [...window.originalTracksList];
-            // tracksList = window.tracksList; // Redundant
+            
             if (window.currentTrackId) {
                 window.currentTrackIndex = window.tracksList.findIndex(track => String(track.id) === String(window.currentTrackId));
                 currentTrackIndex = window.currentTrackIndex;
@@ -565,17 +564,17 @@ function _shuffleCurrentTracksList() {
         [tempShuffleList[i], tempShuffleList[j]] = [tempShuffleList[j], tempShuffleList[i]];
     }
     window.tracksList = tempShuffleList;
-    tracksList = window.tracksList; // Sync local
+    tracksList = window.tracksList; 
     if (window.currentTrackId) {
         window.currentTrackIndex = window.tracksList.findIndex(track => String(track.id) === String(window.currentTrackId));
     } else { window.currentTrackIndex = -1; }
-    currentTrackIndex = window.currentTrackIndex; // Sync local
+    currentTrackIndex = window.currentTrackIndex; 
 }
 
 function toggleRepeat() {
     const repeatButton = document.querySelector('.control-button[title="Repeat"]');
     window.isRepeatActive = !window.isRepeatActive;
-    isRepeatActive = window.isRepeatActive; // Sync local
+    isRepeatActive = window.isRepeatActive; 
     if (window.isRepeatActive) {
         if (repeatButton) repeatButton.classList.add('active');
         if (window.currentAudio) window.currentAudio.loop = true; 
@@ -587,7 +586,7 @@ function toggleRepeat() {
     }
 }
 
-// --- Setup Volume Control ---
+
 function setupVolumeControl() {
     const volumeButton = document.querySelector('.volume-button');
     const volumeIcon = document.getElementById('volume-icon');
@@ -632,7 +631,7 @@ function setupVolumeControl() {
     updateVolumeUI();
 }
 
-// --- Like Song Functionality ---
+
 async function handleLikeSong(event) {
     event.stopPropagation();
     const button = event.currentTarget;
@@ -676,7 +675,7 @@ async function handleLikeSong(event) {
     }
 }
 
-// --- DOMContentLoaded Initialization ---
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("SharedPlayer Script: DOMContentLoaded. Initializing...");
     document.querySelector('.play-pause')?.addEventListener('click', togglePlayPause);
@@ -714,22 +713,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Page-specific track list building
-    // This needs to be robust enough to identify the current page context.
-    if (document.querySelector('.playlist-tracks .track-item')) { // User Playlist Detail Page
+    
+    
+    if (document.querySelector('.playlist-tracks .track-item')) { 
         buildTracksListFromPage('.playlist-tracks .track-item', 'User Playlist Details');
-    } else if (document.querySelector('h1.main-header')?.textContent.includes('Liked Songs')) { // Liked Songs Page
-        // Add a class to the body tag of liked_songs.html for easier targeting: <body class="liked-songs-page">
-        // Then use: document.querySelector('body.liked-songs-page .track-list .track-item')
-        buildTracksListFromPage('.track-list .track-item', 'Liked Songs Page'); // Generic selector for now
-    } else if (document.querySelector('.artist-top-tracks .track-item')) { // Artist Profile
+    } else if (document.querySelector('h1.main-header')?.textContent.includes('Liked Songs')) { 
+        
+        
+        buildTracksListFromPage('.track-list .track-item', 'Liked Songs Page'); 
+    } else if (document.querySelector('.artist-top-tracks .track-item')) { 
         buildTracksListFromPage('.artist-top-tracks .track-item', 'Artist Profile');
-    } else if (document.querySelector('.search-results-container .track-list .track-item')) { // Search Results
+    } else if (document.querySelector('.search-results-container .track-list .track-item')) { 
         buildTracksListFromPage('.search-results-container .track-list .track-item', 'Search Results');
-    } else if (document.querySelector('.top-tracks-section .track-list .track-item')) { // Index Page Top Tracks
+    } else if (document.querySelector('.top-tracks-section .track-list .track-item')) { 
         buildTracksListFromPage('.top-tracks-section .track-list .track-item', 'Index Page Top Tracks');
     }
-    // Add more conditions for other pages if needed
+    
 
     window.handlePlayTrackWithFreshUrl = handlePlayTrackWithFreshUrl; 
     window.playTrackGlobal = playTrackGlobal; 

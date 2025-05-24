@@ -3,21 +3,20 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
-from .models import Song, UserProfile, Playlist # Ensure your models are imported
-from .forms import PlaylistForm # Ensure your forms are imported
+from .models import Song, UserProfile, Playlist 
+from .forms import PlaylistForm 
 import requests
 import json
-import logging # Import logging
+import logging 
 
-# Get an instance of a logger
-logger = logging.getLogger(__name__) # Best practice: use __name__
+logger = logging.getLogger(__name__) 
 
 DEEZER_API_URL = "https://api.deezer.com"
 
 def format_duration_helper(seconds_str):
     """Helper function to format seconds string into M:SS. Handles None or invalid."""
     try:
-        seconds = int(seconds_str) # Convert to int first
+        seconds = int(seconds_str) 
         if seconds < 0:
             return "0:00"
         minutes = seconds // 60
@@ -316,9 +315,6 @@ def create_playlist_view(request):
             playlist = form.save(commit=False)
             playlist.user = request.user
             playlist.save()
-            # Since it's a new playlist, it's empty, so cover_image_url will be None by default.
-            # We can optionally call update_cover_image here, but it will set it to None.
-            # playlist.update_cover_image() # This would set it to None
             messages.success(request, f"Playlist '{playlist.name}' created successfully!")
             return redirect('user_playlist_detail', playlist_id=playlist.id)
         else:
@@ -334,10 +330,6 @@ def create_playlist_view(request):
 @login_required(login_url='login')
 def my_playlists_view(request):
     playlists = Playlist.objects.filter(user=request.user).order_by('-id')
-    # Optionally, ensure all playlists have their covers updated if they were created before this feature
-    # for p in playlists:
-    #     if p.cover_image_url is None and p.songs.exists(): # Example condition
-    #         p.update_cover_image()
     context = {'playlists': playlists}
     return render(request, 'my_playlists.html', context)
 
@@ -384,7 +376,7 @@ def add_song_to_playlist_view(request, playlist_id):
             response_data = {'success': False, 'message': f"'{song.title}' is already in '{playlist.name}'.", 'song_id': song.deezer_id}
         else:
             playlist.songs.add(song)
-            playlist.update_cover_image() # Update cover image after adding a song
+            playlist.update_cover_image() 
             response_data = {'success': True, 'message': f"Added '{song.title}' to '{playlist.name}'", 'song_id': song.deezer_id}
         return JsonResponse(response_data)
     return JsonResponse({'error': 'Invalid request method. Only POST is allowed.'}, status=405)
@@ -414,7 +406,7 @@ def remove_song_from_playlist_view(request, playlist_id):
         response_data = {}
         if playlist.songs.filter(pk=song.pk).exists():
             playlist.songs.remove(song)
-            playlist.update_cover_image() # Update cover image after removing a song
+            playlist.update_cover_image()
             response_data = {'success': True, 'message': f"Removed '{song.title}' from '{playlist.name}'", 'song_id': song.deezer_id}
         else:
             response_data = {'success': False, 'message': f"'{song.title}' was not found in this playlist.", 'song_id': song.deezer_id}
@@ -473,7 +465,7 @@ def add_song_to_playlists_view(request):
                         logger.info(f"User {request.user.username}: Song '{song.title}' (ID: {song.deezer_id}) already in playlist '{playlist.name}' (ID: {playlist.id}).")
                     else:
                         playlist.songs.add(song)
-                        playlist.update_cover_image() # Update cover image
+                        playlist.update_cover_image() 
                         results[playlist.id] = {'success': True, 'message': f"Added to '{playlist.name}'"}
                         logger.info(f"User {request.user.username}: Added song '{song.title}' (ID: {song.deezer_id}) to playlist '{playlist.name}' (ID: {playlist.id}).")
                 except Exception as add_e:
@@ -527,7 +519,6 @@ def get_fresh_preview_url_view(request, deezer_id_str):
             return JsonResponse({'error': 'An internal server error occurred.', 'preview_url': None}, status=500)
     return JsonResponse({'error': 'Invalid request method. Only GET is allowed.'}, status=405)
 
-# --- Deezer API Fetching Functions ---
 def get_top_artists(limit=10):
     endpoint = f"{DEEZER_API_URL}/chart/0/artists"
     params = {'limit': limit}
@@ -815,29 +806,24 @@ def get_deezer_playlist_details(playlist_id):
 def ajax_search_view(request):
     query = request.GET.get('q', None)
     results = {'tracks': [], 'artists': []}
-    MAX_ARTISTS_DISPLAY = 5 # Max artists to show in AJAX results
+    MAX_ARTISTS_DISPLAY = 5 
 
     if query and len(query.strip()) > 0:
         logger.info(f"AJAX search initiated for query: '{query}'")
-        # Use your existing search_deezer function
+       
         search_results_dict = search_deezer(query, limit_tracks=10, limit_artists=MAX_ARTISTS_DISPLAY, limit_albums=0) 
 
         if search_results_dict:
-            # Process tracks first (for 'is_liked' and to identify top track's artist)
             raw_tracks = search_results_dict.get('tracks', [])
             if raw_tracks:
-                # Make a copy for modification if _add_is_liked_status_to_tracks modifies in place
                 tracks_copy = list(raw_tracks) 
                 results['tracks'] = _add_is_liked_status_to_tracks(request, tracks_copy)
 
-            # Prepare artists list
             final_artists_list = []
             processed_artist_ids = set() 
 
-            # 1. Prioritize artist of the top track
-            if results['tracks']: # Check if tracks list is not empty after processing
+            if results['tracks']: 
                 top_track = results['tracks'][0]
-                # Ensure artist_id and artist_name are present in track dictionary
                 top_track_artist_id = top_track.get('artist_id') 
                 top_track_artist_name = top_track.get('artist_name')
 
@@ -845,7 +831,6 @@ def ajax_search_view(request):
                     top_track_artist_id_str = str(top_track_artist_id)
                     found_in_general_search = False
                     
-                    # Check if this artist is already in the general artist search results
                     original_artists_from_search = search_results_dict.get('artists', [])
                     for artist_from_search in original_artists_from_search:
                         if str(artist_from_search.get('id')) == top_track_artist_id_str:
@@ -855,11 +840,10 @@ def ajax_search_view(request):
                             logger.info(f"Prioritized top track artist '{top_track_artist_name}' (ID: {top_track_artist_id_str}) from general search.")
                             break 
                     
-                    # If not found in general search, fetch details to get picture
                     if not found_in_general_search and len(final_artists_list) < MAX_ARTISTS_DISPLAY:
                         logger.info(f"Top track artist (ID: {top_track_artist_id_str}, Name: {top_track_artist_name}) not in general search. Fetching details.")
                         detailed_artist = get_artist_details(top_track_artist_id_str) 
-                        if detailed_artist and detailed_artist.get('id'): # Ensure get_artist_details was successful
+                        if detailed_artist and detailed_artist.get('id'):
                             artist_to_add = {
                                 'id': detailed_artist.get('id'),
                                 'name': detailed_artist.get('name'),
@@ -870,16 +854,14 @@ def ajax_search_view(request):
                             logger.info(f"Added top track artist '{detailed_artist.get('name')}' after fetching details.")
                         else:
                             logger.warning(f"Could not fetch details for top track artist ID: {top_track_artist_id_str}. Adding without picture if name exists.")
-                            if top_track_artist_name: # Add with name only if picture fetch failed
+                            if top_track_artist_name: 
                                 final_artists_list.append({
                                     'id': top_track_artist_id_str, 
                                     'name': top_track_artist_name, 
-                                    'picture_medium': None # Or a placeholder image URL
+                                    'picture_medium': None
                                 })
                                 processed_artist_ids.add(top_track_artist_id_str)
 
-
-            # 2. Add other artists from the general search, up to the limit
             original_artists_from_search = search_results_dict.get('artists', [])
             for artist_from_search in original_artists_from_search:
                 if len(final_artists_list) >= MAX_ARTISTS_DISPLAY:
@@ -903,14 +885,6 @@ def get_new_release_albums(limit=20):
     """
     Fetches new album releases from Deezer.
     """
-    # Deezer API endpoint for editorial new releases (albums)
-    # This endpoint might vary or require specific genre IDs sometimes.
-    # A common way is to get the "new releases" chart or a specific editorial selection.
-    # Let's try /editorial/0/releases (all new releases)
-    # Or /chart/0/albums&new=true (might not be a valid param, Deezer docs are key)
-    # A more reliable endpoint is often related to editorial selections or charts.
-    # For this example, we'll use a chart endpoint that often shows new items.
-    # Or more directly: /editorial/0/releases
     
     endpoint = f"{DEEZER_API_URL}/editorial/0/releases"
     params = {'limit': limit}
@@ -932,13 +906,12 @@ def get_new_release_albums(limit=20):
                 album_info = {
                     'id': album_data.get('id'),
                     'title': album_data.get('title'),
-                    'picture_medium': album_data.get('cover_medium'), # Deezer uses 'cover_medium' for albums
+                    'picture_medium': album_data.get('cover_medium'), 
                     'artist_name': artist_data.get('name', 'Various Artists'),
                     'artist_id': artist_data.get('id'),
                     'link': album_data.get('link'),
                     'release_date': album_data.get('release_date') 
                 }
-                # Ensure essential fields are present
                 if album_info['id'] and album_info['title']:
                     albums_info.append(album_info)
                 else:
@@ -959,28 +932,24 @@ def get_new_release_albums(limit=20):
         
     return albums_info
 
-# --- NEW View for New Releases Page ---
 def new_releases_view(request):
     """
     Displays a page with new album releases.
     This view will re-use the search.html template but populate it differently.
     """
-    new_albums = get_new_release_albums(limit=24) # Fetch more for a full page display
+    new_albums = get_new_release_albums(limit=24) 
     
     context = {
-        'query': "New Releases", # To give a title-like feel on the search page
+        'query': "New Releases", 
         'new_release_albums': new_albums,
-        'has_results': bool(new_albums), # True if albums were found
-        'results_from_category_click': True, # Flag for the template
-        'api_error': not new_albums # Consider it an API error if no albums are fetched
+        'has_results': bool(new_albums),
+        'results_from_category_click': True, 
+        'api_error': not new_albums 
     }
     
-    # Fetch user's playlists for sidebar, as it's part of base.html context
     user_playlists = []
     if request.user.is_authenticated:
         user_playlists = Playlist.objects.filter(user=request.user).order_by('-id')
     context['playlists'] = user_playlists
     
-    # We will render these results using the search.html template
-    # The search.html template was modified to handle this 'results_from_category_click' context
     return render(request, 'search.html', context)

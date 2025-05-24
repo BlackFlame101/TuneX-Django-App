@@ -45,7 +45,6 @@
     </style>
 {% endblock %}
 
-{# Add class to body for easier JS targeting if needed, though querySelector on h1 might be enough #}
 {% block body_class %}liked-songs-page{% endblock %}
 
 {% block content %}
@@ -79,7 +78,7 @@
                     </div>
                     <div class="track-meta" style="margin-left: auto; display: flex; align-items: center; gap: 10px; padding-left:15px; z-index:5;">
                         <div class="track-duration">{{ song.duration_formatted }}</div>
-                        <button class="like-button active" {# Liked songs are always liked initially on this page #}
+                        <button class="like-button active" 
                                 data-track-id="{{ song.deezer_id }}" 
                                 onclick="event.stopPropagation();" 
                                 title="Unlike this song">
@@ -106,6 +105,4 @@
 {% endblock %}
 
 {% block extra_scripts %}
-{# Removed the old inline script for unlike functionality, as shared_player.js handleLikeSong covers it globally #}
-{# The DOMContentLoaded in shared_player.js will call buildTracksListFromPage for this page. #}
 {% endblock %}

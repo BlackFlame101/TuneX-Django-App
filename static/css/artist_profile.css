@@ -1,17 +1,17 @@
-/* Styles specific to the artist profile page */
+
 .artist-header {
     display: flex;
-    align-items: flex-end; /* Align items to bottom */
+    align-items: flex-end; 
     gap: 24px;
     margin-bottom: 40px;
-    padding: 30px 0; /* Add some vertical padding */
-    /* background: linear-gradient(to bottom, rgba(0,0,0,0.5), var(--background) 80%); Optional gradient */
+    padding: 30px 0; 
+    
 }
 .artist-header-image {
     width: 180px;
     height: 180px;
-    border-radius: 50%; /* Circular artist image */
-    background-color: #555; /* Fallback bg */
+    border-radius: 50%; 
+    background-color: #555; 
     background-size: cover;
     background-position: center;
     box-shadow: 0 8px 24px rgba(0,0,0,0.5);
@@ -28,8 +28,8 @@
     margin-bottom: 8px;
 }
 .artist-header-info .name {
-    font-size: 48px; /* Larger font size for name */
-    font-weight: 900; /* Bolder */
+    font-size: 48px; 
+    font-weight: 900; 
     margin-bottom: 12px;
     line-height: 1.1;
 }
@@ -38,14 +38,14 @@
     color: var(--text-muted);
 }
 .artist-top-tracks .track-rank {
-    grid-column: rank; /* Assign to the 'rank' column */
+    grid-column: rank; 
     color: var(--text-muted);
     font-size: 14px;
-    text-align: right; /* Align rank number right */
-    padding-right: 15px; /* Add space before duration */
-    white-space: nowrap; /* Prevent wrapping */
+    text-align: right; 
+    padding-right: 15px; 
+    white-space: nowrap; 
 }
-/* Responsive adjustments for header */
+
  @media (max-width: 768px) {
     .artist-header {
         flex-direction: column;
@@ -62,23 +62,23 @@
         font-size: 32px;
      }
  }
- .track-item { /* This was duplicated, assuming it's a general style for track items on this page */
+ .track-item { 
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Optional: spreads items */
+    justify-content: space-between; 
     padding: 12px 0;
-    gap: 16px; /* Adjust spacing between items */
-    border-bottom: 1px solid var(--border-color); /* Optional */
+    gap: 16px; 
+    border-bottom: 1px solid var(--border-color); 
 }
 .track-meta {
     display: flex;
     align-items: center;
-    gap: 12px; /* spacing between rank and duration */
+    gap: 12px; 
     white-space: nowrap;
     font-size: 14px;
     color: var(--text-muted);
 }
-.track-rank, /* This was duplicated, assuming it's a general style for track items on this page */
+.track-rank, 
 .track-duration {
     display: inline-block;
     white-space: nowrap;
@@ -86,6 +86,6 @@
     color: var(--text-muted);
 }
 
-.track-duration { /* This was duplicated, assuming it's a general style for track items on this page */
+.track-duration { 
     margin-left: 8px;
 }

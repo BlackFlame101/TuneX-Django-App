@@ -18,9 +18,8 @@
     <div class="content-section top-artists-section">
         <h2 class="section-header">Top Artists This Week</h2>
         {% if top_artists %}
-            <div class="horizontal-scroll-container">
-                {# Loop through the artists passed from the view context #}
-                {% for name, artist_id, image_url in top_artists %} {# Variables match Deezer function output #}
+            <div class="horizontal-scroll-container">                
+                {% for name, artist_id, image_url in top_artists %} 
                     <div class="artist-card" data-artist-id="{{ artist_id }}">
                         <div class="artist-image"
                              {% if image_url %}
@@ -29,10 +28,9 @@
                                 style="background-image: url('https://placehold.co/160x160/333333/CCCCCC?text=?');" {# Fallback placeholder #}
                              {% endif %}
                              >
-                            {# Placeholder icon handled by CSS if no background-image is set #}
                         </div>
                         <div class="artist-name">{{ name }}</div>
-                        <div class="artist-subtitle">Artist</div> {# Static subtitle #}
+                        <div class="artist-subtitle">Artist</div> 
                     </div>
                 {% endfor %}
             </div>
@@ -45,9 +43,7 @@
         <h2 class="section-header">Top Tracks This Week</h2>
         {% if top_tracks %}
             <div class="track-list">
-                {# Loop through the top tracks from the view context #}
                 {% for track in top_tracks %}
-                    {# Pass preview_url to playTrack #}
                     <div class="track-item" onclick="playTrack('{{ track.id }}', '{{ track.title|escapejs }}', '{{ track.artist_name|escapejs }}', '{{ track.album_cover_medium }}', '{{ track.preview_url }}')">
                         <div class="track-number">{{ forloop.counter }}</div>
                         <div class="track-image"
@@ -63,13 +59,11 @@
                         </div>
                         <div class="track-duration">{{ track.duration_formatted }}</div>
                         <div class="track-icons" style="display: flex; align-items: center; gap: 10px;">
-                            {# Like Icon #}
                             <button class="like-button {% if track.is_liked %}active{% endif %}" data-track-id="{{ track.id }}" onclick="event.stopPropagation();" title="{% if track.is_liked %}Unlike{% else %}Like{% endif %}">
                                 <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                 </svg>
                             </button>
-                            {# Add to Playlist Icon #}
                             <button class="add-to-playlist-button" 
                                     data-track-id="{{ track.id }}" 
                                     onclick="event.stopPropagation();" 
@@ -82,11 +76,9 @@
                         </div>
                     </div>
                 {% empty %}
-                    {# This part is inside the loop, better placed after endif #}
                 {% endfor %}
             </div>
         {% else %}
-            {# Message shown if top_tracks list is empty or doesn't exist #}
             <p style="color: var(--text-muted);">Could not load top tracks at this time.</p>
         {% endif %}
     </div>
@@ -96,7 +88,6 @@
         {% if top_playlists %}
             <div class="card-grid"> 
                 {% for playlist in top_playlists %}
-                    <!-- Added data-playlist-id attribute and removed onclick attribute -->
                     <div class="card" data-playlist-id="{{ playlist.id }}" data-deezer-playlist="true">
                          <div class="card-image"
                               {% if playlist.picture_medium %}
@@ -120,5 +111,4 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    <!-- This block is left empty since we moved the script to the extra_head block -->
 {% endblock %}

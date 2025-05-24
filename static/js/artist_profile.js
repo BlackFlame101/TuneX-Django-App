@@ -1,15 +1,14 @@
-// --- Global Player State (initialized from window object set in base.html) ---
 let currentAudio = window.currentAudio || null;
 let isPlaying = window.isPlaying || false;
 let currentTrackId = window.currentTrackId || null;
-let tracksList = window.tracksList || []; // This will be populated by buildTracksListFromPage
+let tracksList = window.tracksList || []; 
 let currentTrackIndex = window.currentTrackIndex || -1;
 let isShuffleActive = window.isShuffleActive || false;
 let isRepeatActive = window.isRepeatActive || false;
 let originalTracksList = window.originalTracksList || [];
-let unmutedVolume = 0.7; // Declare unmutedVolume globally and initialize
+let unmutedVolume = 0.7; 
 
-// --- Helper Functions ---
+
 function formatTime(seconds) {
     if (isNaN(seconds) || seconds < 0) return "0:00";
     const minutes = Math.floor(seconds / 60);
@@ -34,14 +33,14 @@ function getCSRFToken() {
     return csrfToken;
 }
 
-// --- UI Update Functions ---
+
 function updatePlayerUI(playing) {
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
     const playPauseButton = document.querySelector('.play-pause');
 
-    window.isPlaying = playing; // Update global state for other scripts/parts
-    isPlaying = playing; // This script's local reference to global state
+    window.isPlaying = playing; 
+    isPlaying = playing; 
 
     if (playing) {
         if (playIcon) playIcon.style.display = 'none';
@@ -54,7 +53,7 @@ function updatePlayerUI(playing) {
     }
 }
 
-// --- Volume UI Update Function (Moved outside setupVolumeControl) ---
+
 function updateVolumeUI() {
     const volumeLevel = document.getElementById('volume-level');
     const volumeIcon = document.getElementById('volume-icon');
@@ -62,9 +61,9 @@ function updateVolumeUI() {
 
     if (!volumeLevel || !volumeIcon || !volumeMuteIcon) return;
     const audio = window.currentAudio;
-    // Use the global unmutedVolume for UI display when audio is not available or muted
+    
     const volToShow = audio && !audio.muted ? audio.volume : unmutedVolume;
-    const mutedState = audio ? audio.muted : (unmutedVolume === 0); // Consider muted if no audio and unmutedVolume is 0
+    const mutedState = audio ? audio.muted : (unmutedVolume === 0); 
 
     if (mutedState) {
         volumeIcon.style.display = 'none';
@@ -78,7 +77,7 @@ function updateVolumeUI() {
 }
 
 
-// --- Main Playback Function (this will be window.playTrackGlobal) ---
+
 function playTrackInternal(id, title, artistName, imageUrl, audioUrl, durationFormatted = "0:00") {
     console.log(`Player: playTrackInternal called! ID: ${id}, Title: ${title}, Duration: ${durationFormatted}`);
     console.log(`Player: Attempting to play audio from URL: "${audioUrl}" for track "${title}"`);
@@ -148,14 +147,14 @@ function playTrackInternal(id, title, artistName, imageUrl, audioUrl, durationFo
     window.currentTrackId = id;   
     currentTrackId = id;        
 
-    // Set the volume of the new audio object to the last known unmuted volume
-    // Ensure unmutedVolume is accessible here, it's a script-level variable
+    
+    
     if (typeof unmutedVolume !== 'undefined') {
         newAudio.volume = unmutedVolume;
-        // Also update the UI to reflect the volume
+        
         updateVolumeUI(); 
     } else {
-        // Fallback if unmutedVolume is somehow not defined (shouldn't happen with current structure)
+        
         newAudio.volume = 0.7; 
     }
 
@@ -183,7 +182,7 @@ function playTrackInternal(id, title, artistName, imageUrl, audioUrl, durationFo
         });
 }
 
-// --- Audio Event Handlers (use global currentAudio) ---
+
 function updateProgress() {
     if (!window.currentAudio || isNaN(window.currentAudio.duration) || window.currentAudio.duration <= 0) return;
     const percentage = (window.currentAudio.currentTime / window.currentAudio.duration) * 100;
@@ -227,7 +226,7 @@ function handleAudioError(e) {
 function handleAudioPlay() { updatePlayerUI(true); }
 function handleAudioPause() { updatePlayerUI(false); }
 
-// --- Navigation and Control Functions ---
+
 function playNextTrack() {
     const activeTrackList = window.tracksList || [];
     if (activeTrackList.length === 0) { updatePlayerUI(false); return; }
@@ -292,7 +291,7 @@ function handleProgressBarClick(e) {
     }
 }
 
-// --- Track List Building (Global Function) ---
+
 function buildTracksListFromPage(selector, pageType = "generic") {
     let newTracks = [];
     console.log(`Player: Building tracks list for ${pageType} using selector: ${selector}`);
@@ -303,12 +302,12 @@ function buildTracksListFromPage(selector, pageType = "generic") {
         let trackData = {};
         const onclickAttr = trackElement.getAttribute('onclick');
 
-        // Log the onclick attribute for inspection
+        
         console.log(`Player: Processing track element with onclick: ${onclickAttr}`);
 
-        if (onclickAttr && onclickAttr.includes('playTrackGlobal')) { // Check for the correct global function call
+        if (onclickAttr && onclickAttr.includes('playTrackGlobal')) { 
              try {
-                // Regex adjusted to specifically match playTrackGlobal
+                
                 const regex = /playTrackGlobal\s*\(\s*['"]?([^'"\s]+)['"]?\s*,\s*['"]((?:\\.|[^"\\])*)['"]\s*,\s*['"]((?:\\.|[^"\\])*)['"]\s*,\s*['"]([^'"]*)['"]\s*,\s*(['"]?(?:null|None|[^'"]*)['"]?)\s*,\s*(['"]?([^'"]*)['"]?)?\s*\)/;
                 const match = onclickAttr.match(regex);
                 if (match && match.length >= 6) {
@@ -329,7 +328,7 @@ function buildTracksListFromPage(selector, pageType = "generic") {
             } catch (e) { console.error(`Player: Error parsing track from onclick at element:`,trackElement, e); return; }
         } else {
             console.warn("Player: Could not find playTrackGlobal in onclick for element:", trackElement, " Attempting data attributes.");
-            // Fallback to data attributes if onclick is not as expected
+            
             trackData.id = trackElement.dataset.trackId;
             trackData.title = trackElement.dataset.trackTitle || trackElement.querySelector('.track-title')?.textContent.trim() || "Unknown Title";
             trackData.artist = trackElement.dataset.trackArtist || trackElement.querySelector('.track-artist')?.textContent.trim() || "Unknown Artist";
@@ -348,20 +347,20 @@ function buildTracksListFromPage(selector, pageType = "generic") {
 
     window.tracksList = [...newTracks];
     window.originalTracksList = [...newTracks];
-    tracksList = window.tracksList; // Sync local script's reference
-    originalTracksList = window.originalTracksList; // Sync local script's reference
+    tracksList = window.tracksList; 
+    originalTracksList = window.originalTracksList; 
 
     if (window.isShuffleActive) _shuffleCurrentTracksList();
     else {
         if (window.currentTrackId) {
             window.currentTrackIndex = window.tracksList.findIndex(track => String(track.id) === String(window.currentTrackId));
         } else { window.currentTrackIndex = -1; }
-        currentTrackIndex = window.currentTrackIndex; // Sync local
+        currentTrackIndex = window.currentTrackIndex; 
     }
     console.log(`Player: Built tracks list for ${pageType} with ${window.tracksList.length} tracks. List:`, window.tracksList);
 }
 
-// --- Shuffle and Repeat Logic ---
+
 function toggleShuffle() {
     const shuffleButton = document.querySelector('.control-button[title="Shuffle"]');
     window.isShuffleActive = !window.isShuffleActive;
@@ -419,7 +418,7 @@ function toggleRepeat() {
     }
 }
 
-// --- Setup Volume Control ---
+
 function setupVolumeControl() {
     const volumeButton = document.querySelector('.volume-button');
     const volumeIcon = document.getElementById('volume-icon');
@@ -429,13 +428,13 @@ function setupVolumeControl() {
 
     if (!volumeButton || !volumeBar || !volumeLevel || !volumeIcon || !volumeMuteIcon) return;
     
-    // Initialize unmutedVolume if it's still at its default or if audio exists
+    
     if (unmutedVolume === 0.7 && window.currentAudio) {
          unmutedVolume = window.currentAudio.volume;
-         if (window.currentAudio.muted) unmutedVolume = 0.7; // Reset if muted initially
+         if (window.currentAudio.muted) unmutedVolume = 0.7; 
     } else if (unmutedVolume === 0.7) {
-        // If no audio and still default, check if a volume was stored previously (e.g., in localStorage)
-        // For now, we'll just keep the default 0.7 if no audio is present initially
+        
+        
     }
 
 
@@ -450,12 +449,12 @@ function setupVolumeControl() {
         const rect = volumeBar.getBoundingClientRect();
         let newVolume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
         
-        // Update the global unmutedVolume
+        
         unmutedVolume = newVolume; 
 
         if (window.currentAudio) {
             window.currentAudio.volume = newVolume;
-            window.currentAudio.muted = false; // Unmute if volume is changed via bar
+            window.currentAudio.muted = false; 
         }
         updateVolumeUI();
     });
@@ -465,25 +464,25 @@ function setupVolumeControl() {
         if (audio) {
             if (audio.muted) {
                 audio.muted = false;
-                // Restore to the last unmuted volume, or a default if unmutedVolume was 0
+                
                 audio.volume = unmutedVolume > 0 ? unmutedVolume : 0.1; 
             } else {
-                // Store the current volume before muting
+                
                 if (audio.volume > 0) unmutedVolume = audio.volume; 
                 audio.muted = true;
             }
         } else { 
-            // If no audio, just toggle the conceptual mute state based on unmutedVolume
+            
             unmutedVolume = (unmutedVolume === 0) ? 0.7 : 0;
         }
         updateVolumeUI();
     });
 
-    // Initial UI update based on the global unmutedVolume
+    
     updateVolumeUI();
 }
 
-// --- Like Song Functionality ---
+
 async function handleLikeSong(event) {
     event.stopPropagation(); 
     const button = event.currentTarget;
@@ -533,11 +532,11 @@ async function handleLikeSong(event) {
     }
 }
 
-// --- DOMContentLoaded Initialization ---
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Player Script (artist_profile.js): DOMContentLoaded. Initializing...");
 
-    // Page-specific track list building
+    
     if (document.querySelector('.artist-header')) {
         buildTracksListFromPage('.artist-top-tracks .track-item', 'Artist Profile');
     } else if (document.querySelector('.search-results-container .track-list')) {
@@ -547,10 +546,10 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (document.querySelector('.top-tracks-section .track-list')) { 
         buildTracksListFromPage('.top-tracks-section .track-list .track-item', 'Index Page Top Tracks');
     } else if (document.querySelector('h1.main-header')?.textContent.includes('Liked Songs')) {
-         buildTracksListFromPage('.track-list .track-item', 'Liked Songs'); // Generic for liked_songs.html
+         buildTracksListFromPage('.track-list .track-item', 'Liked Songs'); 
     }
     
-    // Wire up common Player Controls
+    
     document.querySelector('.play-pause')?.addEventListener('click', togglePlayPause);
     document.getElementById('progress-bar')?.addEventListener('click', handleProgressBarClick);
     document.querySelector('.control-button[title="Next"]')?.addEventListener('click', playNextTrack);
@@ -572,12 +571,12 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('.like-button').forEach(button => {
     button.addEventListener('click', handleLikeSong); 
     const trackItem = button.closest('.track-item');
-    const textSpan = button.querySelector('.like-button-text'); // Ensure this span exists in your button HTML
+    const textSpan = button.querySelector('.like-button-text'); 
     const svgIcon = button.querySelector('svg');
 
-    // Initialize button state based on data-is-liked from the parent .track-item,
-    // but only if the data-is-liked attribute is present on the track item.
-    if (trackItem && trackItem.dataset.isLiked !== undefined) { // Check if the attribute exists
+    
+    
+    if (trackItem && trackItem.dataset.isLiked !== undefined) { 
         if (trackItem.dataset.isLiked === 'true') {
             if (textSpan) textSpan.textContent = 'Unlike';
             if (svgIcon) { 
@@ -596,27 +595,21 @@ document.querySelectorAll('.like-button').forEach(button => {
             button.title = "Like this song";
         }
     }
-    // If data-is-liked is NOT present (like on the liked songs page),
-    // the button's initial state from the HTML template will be preserved.
+    
+    
 });
 
-    // Setup "Add to Playlist" Buttons
+    
     document.querySelectorAll('.add-to-playlist-button').forEach(button => {
         button.addEventListener('click', function(event) {
             event.stopPropagation();
             const trackId = this.dataset.trackId;
-            console.log(`Attempting to open "Add to Playlist" modal for track ID: ${trackId}`);
-            // The add_to_playlist_modal.js script handles showing the modal
-            // We just need to ensure the button has the correct data-track-id
-            // and that the modal script is loaded (which it is in base.html)
-            // The modal script will pick up the click event on .add-to-playlist-button
-            // and use the data-track-id.
-            // No alert needed here, the modal handles the interaction.
+            console.log(`Attempting to open "Add to Playlist" modal for track ID: ${trackId}`);        
         });
     });
     
     window.playTrackGlobal = playTrackInternal;
-    window.buildTracksListFromPage = buildTracksListFromPage; // Expose for index.js or other page scripts
+    window.buildTracksListFromPage = buildTracksListFromPage; 
 
     console.log("Player Script: Initialization complete. playTrackGlobal is now on window.");
 });

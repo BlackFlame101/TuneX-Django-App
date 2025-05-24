@@ -1,237 +1,665 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>{% block title %}TuneX{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'TuneXIcon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="icon" href="{% static 'TuneXIcon.png' %}" type="image/x-icon" />
 
-    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="csrf-token" content="{{ csrf_token }}" />
 
     <script>
-        window.appUrls = {
-            likeSong: "{% url 'like_song' %}",
-            ajaxSearch: "{% url 'ajax_search' %}", // Added AJAX search URL
-            // Example: listUserPlaylists: "{% url 'list_user_playlists' %}", 
-            // Example: addSongToPlaylists: "{% url 'add_song_to_playlists' %}" 
-        };
-        window.isPlaying = false;
-        window.currentTrackId = null;
-        window.currentAudio = null;
-        window.tracksList = [];
-        window.originalTracksList = [];
-        window.currentTrackIndex = -1;
-        window.isShuffleActive = false;
-        window.isRepeatActive = false;
-        window.unmutedVolume = 0.7; 
+      window.appUrls = {
+        likeSong: "{% url 'like_song' %}",
+        ajaxSearch: "{% url 'ajax_search' %}",
+      };
+      window.isPlaying = false;
+      window.currentTrackId = null;
+      window.currentAudio = null;
+      window.tracksList = [];
+      window.originalTracksList = [];
+      window.currentTrackIndex = -1;
+      window.isShuffleActive = false;
+      window.isRepeatActive = false;
+      window.unmutedVolume = 0.7;
     </script>
 
     <script src="{% static 'js/shared_player.js' %}" defer></script>
     <script src="{% static 'js/add_to_playlist_modal.js' %}" defer></script>
     <script src="{% static 'js/notifications.js' %}" defer></script>
 
-    {% block extra_head %}
-    {% endblock %}
-</head>
-<body class="{% block body_class %}{% endblock %}"> {# Added body_class block for login/signup pages #}
+    {% block extra_head %} {% endblock %}
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {# Added body_class block for login/signup pages #}
     <aside class="sidebar">
-        <div class="logo">
-            <a href="{% url 'index' %}">
-                <img src="{% static 'logo1.png' %}" alt="TuneX Logo"
-                     onerror="this.onerror=null; this.src='https://placehold.co/130x40/000000/FFFFFF?text=TuneX';">
-            </a>
+      <div class="logo">
+        <a href="{% url 'index' %}">
+          <img
+            src="{% static 'logo1.png' %}"
+            alt="TuneX Logo"
+            onerror="this.onerror=null; this.src='https://placehold.co/130x40/000000/FFFFFF?text=TuneX';"
+          />
+        </a>
+      </div>
+      <nav class="nav-menu">
+        <a
+          href="{% url 'index' %}"
+          class="nav-link {% block nav_home_active %}{% endblock %}"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9 22V12H15V22"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>Home</span>
+        </a>
+        <a
+          href="{% url 'search' %}"
+          class="nav-link {% block nav_search_active %}{% endblock %}"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M21 21L16.65 16.65"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>Search</span>
+        </a>
+        <a
+          href="{% url 'my_playlists' %}"
+          class="nav-link {% block nav_library_active %}{% endblock %}"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4 6L20 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M4 12L20 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M4 18L14 18"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <rect
+              x="2"
+              y="3"
+              width="20"
+              height="18"
+              rx="2"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+            />
+          </svg>
+          <span>Your Library</span>
+        </a>
+      </nav>
+      <div class="create-playlist">
+        <a
+          href="{% url 'create_playlist' %}"
+          class="btn btn-outline"
+          style="margin-top: 16px; text-decoration: none"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="currentColor"
+            />
+            <path
+              d="M12 8V16"
+              stroke="#000"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8 12H16"
+              stroke="#000"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>Create Playlist</span>
+        </a>
+        <a
+          href="{% url 'liked_songs' %}"
+          class="btn btn-outline"
+          style="margin-top: 16px; text-decoration: none"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop
+                  offset="0%"
+                  style="stop-color: #4e00f5; stop-opacity: 1"
+                />
+                <stop
+                  offset="100%"
+                  style="stop-color: #a1a1a1; stop-opacity: 1"
+                />
+              </linearGradient>
+            </defs>
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              fill="url(#grad1)"
+            />
+            <path
+              d="M17.5072 6.18983C17.1467 5.82931 16.7174 5.54563 16.2416 5.35754C15.7657 5.16945 15.2535 5.08081 14.7379 5.10004C13.7355 5.13695 12.7813 5.52214 12 6.18983C11.2187 5.52214 10.2645 5.13695 9.26211 5.10004C8.74654 5.08081 8.23429 5.16945 7.75845 5.35754C7.28262 5.54563 6.85332 5.82931 6.49281 6.18983C5.0131 7.66954 4.85018 9.98985 6.18983 11.6136L12 17.4237L17.8102 11.6136C19.1498 9.98985 18.9869 7.66954 17.5072 6.18983Z"
+              fill="#fff"
+            />
+          </svg>
+          <span>Liked Songs</span>
+        </a>
+      </div>
+      <div class="playlists-section">
+        <div class="playlists">
+          {% include 'sidebar_playlists.html' with playlists=playlists %}
         </div>
-        <nav class="nav-menu">
-            <a href="{% url 'index' %}" class="nav-link {% block nav_home_active %}{% endblock %}">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Home</span>
-            </a>
-            <a href="{% url 'search' %}" class="nav-link {% block nav_search_active %}{% endblock %}">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Search</span>
-            </a>
-            <a href="{% url 'my_playlists' %}" class="nav-link {% block nav_library_active %}{% endblock %}">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <path d="M4 6L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M4 12L20 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M4 18L14 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                     <rect x="2" y="3" width="20" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
-                 </svg>
-                <span>Your Library</span>
-            </a>
-        </nav>
-        <div class="create-playlist">
-             <a href="{% url 'create_playlist' %}" class="btn btn-outline" style="margin-top: 16px; text-decoration: none;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor"/>
-                    <path d="M12 8V16" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M8 12H16" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Create Playlist</span>
-            </a>
-             <a href="{% url 'liked_songs' %}" class="btn btn-outline" style="margin-top: 16px; text-decoration: none;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" style="stop-color:#4e00f5;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#a1a1a1;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect x="4" y="4" width="16" height="16" rx="2" fill="url(#grad1)"/>
-                    <path d="M17.5072 6.18983C17.1467 5.82931 16.7174 5.54563 16.2416 5.35754C15.7657 5.16945 15.2535 5.08081 14.7379 5.10004C13.7355 5.13695 12.7813 5.52214 12 6.18983C11.2187 5.52214 10.2645 5.13695 9.26211 5.10004C8.74654 5.08081 8.23429 5.16945 7.75845 5.35754C7.28262 5.54563 6.85332 5.82931 6.49281 6.18983C5.0131 7.66954 4.85018 9.98985 6.18983 11.6136L12 17.4237L17.8102 11.6136C19.1498 9.98985 18.9869 7.66954 17.5072 6.18983Z" fill="#fff"/>
-                </svg>
-                <span>Liked Songs</span>
-            </a>
+      </div>
+      <div class="user-section">
+        {% if user.is_authenticated %}
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+          "
+        >
+          <a
+            href="#"
+            class="user-link"
+            style="
+              padding: 0;
+              margin: 0;
+              flex-grow: 1;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              text-decoration: none;
+            "
+            title="{{user.username}}"
+          >
+            <div class="user-avatar">{{ user.username|slice:":2"|upper }}</div>
+            <span title="{{ user.username }}">{{ user.username }}</span>
+          </a>
+          <a
+            href="{% url 'logout' %}"
+            title="Logout"
+            style="
+              color: var(--text-muted);
+              margin-left: 12px;
+              flex-shrink: 0;
+              text-decoration: none;
+            "
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="feather feather-log-out"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span style="display: none">Logout</span>
+          </a>
         </div>
-        <div class="playlists-section">
-            <div class="playlists">
-                {% include 'sidebar_playlists.html' with playlists=playlists %}
-            </div>
-        </div>
-        <div class="user-section">
-            {% if user.is_authenticated %}
-                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                    <a href="#" class="user-link" style="padding: 0; margin: 0; flex-grow: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-decoration:none;" title="{{user.username}}">
-                        <div class="user-avatar">{{ user.username|slice:":2"|upper }}</div>
-                        <span title="{{ user.username }}">{{ user.username }}</span>
-                    </a>
-                    <a href="{% url 'logout' %}" title="Logout" style="color: var(--text-muted); margin-left: 12px; flex-shrink: 0; text-decoration: none;">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                         <span style="display: none;">Logout</span>
-                    </a>
-                </div>
-            {% else %}
-                 <a href="{% url 'login' %}" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-                    <span>Login</span>
-                </a>
-                 <a href="{% url 'signup' %}" class="nav-link">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg>
-                    <span>Sign Up</span>
-                </a>
-            {% endif %}
-        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="nav-link">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-log-in"
+          >
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          <span>Login</span>
+        </a>
+        <a href="{% url 'signup' %}" class="nav-link">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-user-plus"
+          >
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="17" y1="11" x2="23" y2="11"></line>
+          </svg>
+          <span>Sign Up</span>
+        </a>
+        {% endif %}
+      </div>
     </aside>
 
     <main class="main-content">
-            <div class="messages-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050; width: auto; max-width: 400px;">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="background-color: {% if message.tags == 'success' %}#28a745{% elif message.tags == 'error' %}#dc3545{% elif message.tags == 'info' %}#17a2b8{% else %}#6c757d{% endif %}; color: white; padding: 12px 18px; border-radius: 5px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center;">
-                        <span>{{ message }}</span>
-                        <button type="button" class="close-alert" data-dismiss="alert" aria-label="Close" style="background:none; border:none; color:white; font-size:1.5rem; line-height:1; opacity:0.8; padding: 0 0 0 15px; cursor:pointer;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endfor %}
-            </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const alerts = document.querySelectorAll('.messages-container .alert');
-                    alerts.forEach(function(alert) {
-                        setTimeout(function() {
-                            alert.style.transition = 'opacity 0.5s ease';
-                            alert.style.opacity = '0';
-                            setTimeout(function() { alert.remove(); }, 500);
-                        }, 5000); 
+      <div
+        class="messages-container"
+        style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 1050;
+          width: auto;
+          max-width: 400px;
+        "
+      >
+        {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show"
+          role="alert"
+          style="background-color: {% if message.tags == 'success' %}#28a745{% elif message.tags == 'error' %}#dc3545{% elif message.tags == 'info' %}#17a2b8{% else %}#6c757d{% endif %}; color: white; padding: 12px 18px; border-radius: 5px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center;"
+        >
+          <span>{{ message }}</span>
+          <button
+            type="button"
+            class="close-alert"
+            data-dismiss="alert"
+            aria-label="Close"
+            style="
+              background: none;
+              border: none;
+              color: white;
+              font-size: 1.5rem;
+              line-height: 1;
+              opacity: 0.8;
+              padding: 0 0 0 15px;
+              cursor: pointer;
+            "
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const alerts = document.querySelectorAll(
+            ".messages-container .alert"
+          );
+          alerts.forEach(function (alert) {
+            setTimeout(function () {
+              alert.style.transition = "opacity 0.5s ease";
+              alert.style.opacity = "0";
+              setTimeout(function () {
+                alert.remove();
+              }, 500);
+            }, 5000);
 
-                        const closeButton = alert.querySelector('.close-alert');
-                        if (closeButton) {
-                            closeButton.addEventListener('click', function() {
-                                alert.style.transition = 'opacity 0.5s ease';
-                                alert.style.opacity = '0';
-                                setTimeout(function() { alert.remove(); }, 500);
-                            });
-                        }
-                    });
-                });
-            </script>
+            const closeButton = alert.querySelector(".close-alert");
+            if (closeButton) {
+              closeButton.addEventListener("click", function () {
+                alert.style.transition = "opacity 0.5s ease";
+                alert.style.opacity = "0";
+                setTimeout(function () {
+                  alert.remove();
+                }, 500);
+              });
+            }
+          });
+        });
+      </script>
 
-        {% block content %}
-        {% endblock %}
+      {% block content %} {% endblock %}
     </main>
 
     <footer class="player">
-        <div class="player-left">
-            <div class="now-playing-image" style="background-color: #333;">
-            </div>
-            <div class="now-playing-info">
-                <div class="now-playing-title">Select a Song</div>
-                <div class="now-playing-artist">Artist Name</div>
-            </div>
+      <div class="player-left">
+        <div class="now-playing-image" style="background-color: #333"></div>
+        <div class="now-playing-info">
+          <div class="now-playing-title">Select a Song</div>
+          <div class="now-playing-artist">Artist Name</div>
         </div>
+      </div>
 
-        <div class="player-center">
-            <div class="player-controls">
-                <button class="control-button" title="Shuffle">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 3H21V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 16V21H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 15L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 4L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <button class="control-button" title="Previous">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 20L9 12L19 4V20Z" fill="currentColor"/><path d="M5 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <button class="control-button play-pause" title="Play">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" id="play-icon"><path d="M6 4L18 12L6 20V4Z"/></svg>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" id="pause-icon" style="display: none;"><path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z"/></svg>
-                </button>
-                <button class="control-button" title="Next">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 4L15 12L5 20V4Z" fill="currentColor"/><path d="M19 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <button class="control-button" title="Repeat">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 1L21 5L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11V9C3 7.93913 3.42143 6.92172 4.17157 6.17157C4.92172 5.42143 5.93913 5 7 5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 23L3 19L7 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13V15C21 16.0609 20.5786 17.0783 19.8284 17.8284C19.0783 18.5786 18.0609 19 17 19H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-            </div>
-            <div class="progress-container">
-                <div class="time" id="current-time">0:00</div>
-                <div class="progress-bar" id="progress-bar">
-                    <div class="progress" id="progress"></div>
-                </div>
-                <div class="time" id="total-time">0:00</div>
-            </div>
+      <div class="player-center">
+        <div class="player-controls">
+          <button class="control-button" title="Shuffle">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 3H21V8"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4 20L21 3"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M21 16V21H16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M15 15L21 21"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4 4L9 9"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <button class="control-button" title="Previous">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M19 20L9 12L19 4V20Z" fill="currentColor" />
+              <path
+                d="M5 19V5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <button class="control-button play-pause" title="Play">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              id="play-icon"
+            >
+              <path d="M6 4L18 12L6 20V4Z" />
+            </svg>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              id="pause-icon"
+              style="display: none"
+            >
+              <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" />
+            </svg>
+          </button>
+          <button class="control-button" title="Next">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M5 4L15 12L5 20V4Z" fill="currentColor" />
+              <path
+                d="M19 5V19"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <button class="control-button" title="Repeat">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M17 1L21 5L17 9"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M3 11V9C3 7.93913 3.42143 6.92172 4.17157 6.17157C4.92172 5.42143 5.93913 5 7 5H21"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7 23L3 19L7 15"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M21 13V15C21 16.0609 20.5786 17.0783 19.8284 17.8284C19.0783 18.5786 18.0609 19 17 19H3"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
         </div>
+        <div class="progress-container">
+          <div class="time" id="current-time">0:00</div>
+          <div class="progress-bar" id="progress-bar">
+            <div class="progress" id="progress"></div>
+          </div>
+          <div class="time" id="total-time">0:00</div>
+        </div>
+      </div>
 
-        <div class="player-right">
-            <div class="volume-container">
-                <button class="control-button volume-button" title="Mute">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="volume-icon">
-                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M15.54 8.46C16.4774 9.39764 16.9988 10.6693 16.9988 11.995C16.9988 13.3207 16.4774 14.5924 15.54 15.53" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="volume-mute-icon" style="display: none;">
-                         <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                         <line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                         <line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <div class="volume-bar" id="volume-bar">
-                    <div class="volume-level" id="volume-level" style="width: 70%;"></div>
-                </div>
-            </div>
+      <div class="player-right">
+        <div class="volume-container">
+          <button class="control-button volume-button" title="Mute">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              id="volume-icon"
+            >
+              <path
+                d="M11 5L6 9H2V15H6L11 19V5Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M15.54 8.46C16.4774 9.39764 16.9988 10.6693 16.9988 11.995C16.9988 13.3207 16.4774 14.5924 15.54 15.53"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              id="volume-mute-icon"
+              style="display: none"
+            >
+              <path
+                d="M11 5L6 9H2V15H6L11 19V5Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <line
+                x1="23"
+                y1="9"
+                x2="17"
+                y2="15"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <line
+                x1="17"
+                y1="9"
+                x2="23"
+                y2="15"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <div class="volume-bar" id="volume-bar">
+            <div
+              class="volume-level"
+              id="volume-level"
+              style="width: 70%"
+            ></div>
+          </div>
         </div>
+      </div>
     </footer>
 
-    {% block extra_scripts %}
-    {% endblock %}
+    {% block extra_scripts %} {% endblock %}
 
-    <div id="playlist-selection-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h3>Add to Playlist(s)</h3>
-            <div id="playlist-list" class="playlist-list">
-            </div>
-            <div class="modal-buttons">
-                <button id="cancel-add-to-playlist" class="btn btn-secondary">Cancel</button>
-                <button id="confirm-add-to-playlist" class="btn btn-primary">Add</button>
-            </div>
+    <div
+      id="playlist-selection-modal"
+      class="modal-overlay"
+      style="display: none"
+    >
+      <div class="modal-content">
+        <h3>Add to Playlist(s)</h3>
+        <div id="playlist-list" class="playlist-list"></div>
+        <div class="modal-buttons">
+          <button id="cancel-add-to-playlist" class="btn btn-secondary">
+            Cancel
+          </button>
+          <button id="confirm-add-to-playlist" class="btn btn-primary">
+            Add
+          </button>
         </div>
+      </div>
     </div>
-
-</body>
+  </body>
 </html>

@@ -1,9 +1,7 @@
-// --- Floating Notification System ---
 function showFloatingNotification(message, type = 'info') {
     const messagesContainer = document.querySelector('.messages-container');
     if (!messagesContainer) {
         console.error('Messages container not found for floating notification.');
-        // Fallback to alert if container is missing
         alert(message);
         return;
     }
@@ -20,7 +18,7 @@ function showFloatingNotification(message, type = 'info') {
     alertDiv.style.display = 'flex';
     alertDiv.style.justifyContent = 'space-between';
     alertDiv.style.alignItems = 'center';
-    alertDiv.style.opacity = '1'; // Start visible
+    alertDiv.style.opacity = '1'; 
 
     alertDiv.innerHTML = `
         <span>${message}</span>
@@ -30,15 +28,13 @@ function showFloatingNotification(message, type = 'info') {
     `;
 
     messagesContainer.appendChild(alertDiv);
-
-    // Auto-dismiss
+    
     setTimeout(function() {
         alertDiv.style.transition = 'opacity 0.5s ease';
         alertDiv.style.opacity = '0';
         setTimeout(function() { alertDiv.remove(); }, 500);
-    }, 5000); // 5 seconds
-
-    // Close button functionality
+    }, 5000); 
+    
     alertDiv.querySelector('.close-alert').addEventListener('click', function() {
         alertDiv.style.transition = 'opacity 0.5s ease';
         alertDiv.style.opacity = '0';
@@ -52,9 +48,8 @@ function getNotificationColor(type) {
         case 'error': return '#dc3545';
         case 'info': return '#17a2b8';
         case 'warning': return '#ffc107';
-        default: return '#6c757d'; // secondary/default
+        default: return '#6c757d'; 
     }
 }
 
-// Expose the function globally
 window.showFloatingNotification = showFloatingNotification;

@@ -33,13 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
         addToPlaylistButtons.forEach(button => {
             const trackId = button.dataset.trackId || 'unknown';
             if (button.dataset.listenerAttached === 'true') {
-                // console.log(`Add to Playlist Modal: Listener ALREADY ATTACHED to button for track ID ${trackId}. Skipping.`);
+                
                 return; 
             }
 
             console.log(`Add to Playlist Modal: ATTEMPTING TO ATTACH listener to button for track ID ${trackId}.`);
             button.addEventListener('click', function(event) {
-                // This log is CRITICAL to see if the listener for a dynamic button is actually firing
+                
                 console.log('Add to Playlist Modal: CLICK HANDLER FIRED for track ID:', this.getAttribute('data-track-id')); 
                 
                 event.stopPropagation(); 
@@ -65,8 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     return;
                 }
-
-                // Fetch user's playlists
+                
                 fetch('/api/user_playlists/', { 
                     method: 'GET',
                     headers: {
@@ -124,19 +123,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initial setup on page load
+    
     setupAddToPlaylistButtons();
 
-    window.setupAddToPlaylistButtons = setupAddToPlaylistButtons; // Expose globally
+    window.setupAddToPlaylistButtons = setupAddToPlaylistButtons; 
 
-    // Modal Cancel button
+    
     if (cancelButton) {
         cancelButton.addEventListener('click', function() {
             hideModal();
         });
     }
 
-    // Modal Confirm ("Add") button
+    
     if (confirmButton) {
         confirmButton.addEventListener('click', function() {
             const selectedPlaylistIds = [];

@@ -8,16 +8,16 @@
 {% block extra_head %}
 <script src="{% static 'js/search.js' %}" defer></script> 
 <style>
-    /* Style for the anchor tags wrapping the browse cards */
+   
     .card-link-wrapper {
-        text-decoration: none; /* Removes the underline */
-        color: inherit; /* Ensures the text color is inherited from parent, not default link color */
-        display: block; /* Makes the entire area of the card clickable if needed */
+        text-decoration: none; 
+        color: inherit;
+        display: block;
     }
     .card-link-wrapper:hover {
-        text-decoration: none; /* Also remove underline on hover if browser adds it */
+        text-decoration: none; 
     }
-    /* Optional: if you want specific styles for live results, you could create search_results.css */
+   
 </style>
 {% endblock %}
 
@@ -35,7 +35,7 @@
     </div>
 
     <div class="search-results-container" id="live-search-results-container">
-        {% if not query and not results_from_category_click %} {# Show browse only if no query and not coming from a category click #}
+        {% if not query and not results_from_category_click %} 
             <h2 class="section-header">Browse all</h2>
              <div class="card-grid browse-cards"> 
                  <a href="https://www.deezer.com/explore/podcasts" target="_blank" class="card-link-wrapper">

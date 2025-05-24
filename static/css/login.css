@@ -1,45 +1,32 @@
-/* Embedded TuneX Styles for Standalone Login Page (from login.html) */
-/* Note: Some of these might be duplicates if also in your main style.css.
-   Consider consolidating into your main stylesheet and using specific classes
-   for auth pages if needed, or ensure this CSS is loaded only on the login page. */
-
-/* :root variables should ideally be in a global CSS file (like style.css)
-   If they are already there, you might not need to redefine them here.
-   For this extraction, I'm including them as they were in the <style> tag.
-*/
 :root {
     --background: #121212;
-    --card: #181818; /* This seems to be general card, login uses --login-card-bg */
+    --card: #181818; 
     --card-hover: #282828;
-    --primary: #3b82f6;     /* Blue color */
-    --primary-hover: #2563eb; /* Darker blue on hover */
+    --primary: #3b82f6;     
+    --primary-hover: #2563eb; 
     --secondary: #404040;
     --border: #282828;
     --text: #ffffff;
     --text-muted: #b3b3b3;
-    --login-card-bg: #282828; /* Specific for login card */
+    --login-card-bg: #282828; 
 }
 
-/* Global reset (if not already in a main CSS) */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Body styling specific to login page context */
-/* If your main style.css has a different body style, these might override or conflict.
-   It's common to have a base body style and then page-specific overrides. */
-body.login-page-body { /* Added a class for specificity, apply this class to <body> in login.html */
+body.login-page-body { 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    background-color: var(--background); /* Ensure dark background */
+    background-color: var(--background); 
     color: var(--text);
-    display: flex; /* Use flexbox to center content */
+    display: flex; 
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px; /* Add padding for smaller screens */
-    overflow-y: auto; /* Allow scrolling if content overflows */
+    padding: 20px; 
+    overflow-y: auto; 
 }
 
 .auth-container {
@@ -48,7 +35,7 @@ body.login-page-body { /* Added a class for specificity, apply this class to <bo
 }
 
 .auth-card {
-     background-color: var(--login-card-bg); /* Uses the specific login card background */
+     background-color: var(--login-card-bg); 
      padding: 40px;
      border-radius: 8px;
      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
@@ -56,7 +43,7 @@ body.login-page-body { /* Added a class for specificity, apply this class to <bo
 }
 
 .auth-logo {
-    max-width: 150px; /* Adjust size as needed */
+    max-width: 150px; 
     margin-bottom: 30px;
     display: block;
     margin-left: auto;
@@ -67,47 +54,47 @@ body.login-page-body { /* Added a class for specificity, apply this class to <bo
     font-size: 28px;
     margin-bottom: 24px;
     color: var(--text);
-    font-weight: 700; /* Make title bold */
+    font-weight: 700; 
 }
 
- /* Style for messages (using TuneX colors) */
+ 
  .message-list {
-     margin-bottom: 1.5rem; /* Space below messages */
+     margin-bottom: 1.5rem; 
      padding: 0;
      list-style: none;
  }
  .message-item {
-     background-color: #4b1d1d; /* Dark red background for errors/info */
-     color: #f87171; /* Light red text */
+     background-color: #4b1d1d; 
+     color: #f87171; 
      padding: 10px 15px;
      border-radius: 4px;
      margin-bottom: 10px;
      font-size: 0.9rem;
-     text-align: center; /* Center message text */
+     text-align: center; 
  }
 
 .auth-form .form-group {
-    margin-bottom: 20px; /* Consistent spacing */
+    margin-bottom: 20px; 
 }
 
-/* Input field styling from TuneX style.css (or similar) */
+
 .auth-form input[type="text"],
 .auth-form input[type="email"],
 .auth-form input[type="password"] {
     width: 100%;
     padding: 12px 16px;
-    /* margin-bottom: 16px; */ /* Original comment: Overrides form-group margin if needed. Let form-group handle it. */
+     
     border-radius: 4px;
     border: 1px solid var(--secondary);
-    background-color: var(--background); /* Dark background for input itself */
+    background-color: var(--background); 
     color: var(--text);
     font-size: 16px;
     transition: border-color 0.2s;
 }
-/* Adjust margin specifically for inputs when no label (or if form-group handles bottom margin) */
+
  .auth-form input[type="text"],
  .auth-form input[type="password"] {
-     margin-bottom: 0; /* Remove bottom margin from input itself if form-group adds it */
+     margin-bottom: 0; 
  }
 
 
@@ -118,27 +105,27 @@ body.login-page-body { /* Added a class for specificity, apply this class to <bo
     border-color: var(--primary);
 }
 
-/* Button styling from TuneX style.css (or similar) */
+
 .auth-button {
     width: 100%;
     padding: 14px 20px;
     border: none;
-    border-radius: 500px; /* Pill shape */
+    border-radius: 500px; 
     background-color: var(--primary);
-    color: var(--text); /* Text color on button */
+    color: var(--text); 
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
-    margin-top: 10px; /* Space above button */
+    margin-top: 10px; 
 }
 
 .auth-button:hover {
     background-color: var(--primary-hover);
-    transform: scale(1.02); /* Slight grow effect */
+    transform: scale(1.02); 
 }
 
-/* Link styling from TuneX style.css (or similar) */
+
 .auth-switch-link {
     margin-top: 24px;
     font-size: 14px;
@@ -146,30 +133,30 @@ body.login-page-body { /* Added a class for specificity, apply this class to <bo
 }
 
 .auth-switch-link a {
-    color: var(--text); /* Link color */
+    color: var(--text); 
     font-weight: 600;
     text-decoration: underline;
     margin-left: 5px;
 }
 
 .auth-switch-link a:hover {
-    color: var(--primary); /* Link hover color */
+    color: var(--primary); 
 }
 
- /* Style for potential Django form errors if you switch back later */
- .errorlist { /* For ul errors from Django forms */
+ 
+ .errorlist { 
     list-style: none;
     padding: 0;
-    color: #f87171; /* Error text color */
+    color: #f87171; 
     font-size: 0.8rem;
     text-align: left;
-    margin-top: 5px; /* Space above error list */
-    margin-bottom: 10px; /* Space below error list */
+    margin-top: 5px; 
+    margin-bottom: 10px; 
  }
- .form-error-message { /* For individual field errors */
+ .form-error-message { 
     color: #f87171;
     font-size: 0.8rem;
     text-align: left;
-    margin-top: 5px; /* Space below the input field, before the error */
-    margin-bottom: 10px; /* Space after the error message */
+    margin-top: 5px; 
+    margin-bottom: 10px; 
  }

@@ -9,12 +9,11 @@
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/playlist_details.css' %}">
     <style>
-        /* Ensure playlist-header-image styles from playlist_details.css are applied */
-        /* or define them here if they are different from the generic one */
-        .playlist-header-image { /* This class is used if playlist.cover_image_url exists */
+        
+        .playlist-header-image { 
             width: 180px;
             height: 180px;
-            background-color: var(--secondary); /* Fallback if image fails to load */
+            background-color: var(--secondary);
             border-radius: 4px;
             background-size: cover;
             background-position: center;
@@ -22,7 +21,7 @@
             flex-shrink: 0;
         }
 
-        .playlist-header-image-generic { /* This class is used for the SVG fallback */
+        .playlist-header-image-generic { 
             width: 180px;
             height: 180px;
             background-color: var(--secondary); 
@@ -68,7 +67,6 @@
                 <div class="playlist-header-image" 
                      style="background-image: url('{{ playlist.cover_image_url }}');"
                      onerror="this.style.backgroundImage = 'url(\'https://placehold.co/180x180/555555/CCCCCC?text=?\')';">
-                     {# Fallback via JS if image fails to load, you can also put the SVG here as innerHTML #}
                 </div>
             {% else %}
                 <div class="playlist-header-image-generic">
@@ -191,8 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         alert(data.message || 'Song removed successfully.');
                     }
-                    // Optionally, reload the page to see the updated cover image immediately
-                    // window.location.reload(); 
                 } else {
                     if (typeof showFloatingNotification === 'function') {
                         showFloatingNotification('Error removing song: ' + (data.error || data.message || 'Unknown error'), 'error');

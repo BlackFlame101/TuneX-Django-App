@@ -1,13 +1,12 @@
-// --- Player State & Elements ---
-let currentAudio = null; // Holds the current Audio object
-let isPlaying = false; // Declare isPlaying ONCE globally
-let currentTrackId = null; // Keep track of the playing track ID
-let tracksList = []; // Will store all track data
+let currentAudio = null; 
+let isPlaying = false; 
+let currentTrackId = null; 
+let tracksList = []; 
 let currentTrackIndex = -1; 
-let userVolume = 0.7; // Store user's preferred volume globally
-let isShuffleActive = false; // Track if shuffle mode is active
-let isRepeatActive = false; // Track if repeat mode is active
-let originalTracksList = []; // Store the original order of tracks
+let userVolume = 0.7; 
+let isShuffleActive = false; 
+let isRepeatActive = false; 
+let originalTracksList = []; 
 let shuffledTracksList = [];
 
 
@@ -27,21 +26,21 @@ function getCSRFToken() {
     }
     return csrfToken;
 }
-// This function should be called both on initial load and if content is dynamically updated
+
 function setupArtistCardListeners() {
     console.log("Setting up artist card listeners...");
     const artistCards = document.querySelectorAll('.artist-card');
     console.log(`Found ${artistCards.length} artist cards`);
     
     artistCards.forEach(card => {
-        // Remove any existing listeners to prevent duplicates
+        
         card.removeEventListener('click', handleArtistCardClick);
-        // Add the click event listener
+        
         card.addEventListener('click', handleArtistCardClick);
     });
 }
 
-// Separate function for the click handler to make it easier to manage
+
 function handleArtistCardClick(event) {
     const card = this;
     const artistId = card.getAttribute('data-artist-id');
@@ -50,28 +49,28 @@ function handleArtistCardClick(event) {
     console.log(`Clicked artist: ${artistName} (ID: ${artistId})`);
     
     if (artistId) {
-        // Navigate to the artist profile page
+        
         window.location.href = `/artist/${artistId}/`;
     } else {
         console.warn("Artist ID not found on clicked card:", card);
     }
 }
 
-// Setup playlist card listeners
+
 function setupPlaylistCardListeners() {
     console.log("Setting up playlist card listeners...");
     const playlistCards = document.querySelectorAll('.card-grid .card');
     console.log(`Found ${playlistCards.length} playlist cards`);
     
     playlistCards.forEach(card => {
-        // Remove existing listener if any
+        
         card.removeEventListener('click', handlePlaylistCardClick);
-        // Add the click event listener
+        
         card.addEventListener('click', handlePlaylistCardClick);
     });
 }
 
-// Handle playlist card clicks
+
 function handlePlaylistCardClick(event) {
     const card = this;
     const playlistId = card.getAttribute('data-playlist-id');
@@ -83,7 +82,7 @@ function handlePlaylistCardClick(event) {
     if (playlistId) {
         let url = isDeezerPlaylist ? `/deezer_playlist/${playlistId}/` : `/playlist/${playlistId}/`;
         window.location.href = url;
-        event.preventDefault(); // Prevent default if there's any other onclick behavior
+        event.preventDefault(); 
     } else {
         console.warn("Playlist ID not found on clicked card:", card);
     }
@@ -138,30 +137,30 @@ async function handleLikeSong(event) {
     }
 }
 
-// Call the setup function when the document is loaded
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Set up artist card listeners
+    
     setupArtistCardListeners();
     
-    // Set up playlist card listeners
+    
     setupPlaylistCardListeners();
     
-    // Rest of your existing DOMContentLoaded code...
+    
     buildTracksList();
     
-    // Setup player controls
+    
     const playPauseButton = document.querySelector('.play-pause');
     if (playPauseButton) {
         playPauseButton.addEventListener('click', togglePlayPause);
     }
     
-    // Set up progress bar for seeking
+    
     const progressBarContainer = document.getElementById('progress-bar');
     if (progressBarContainer) {
         progressBarContainer.addEventListener('click', handleProgressBarClick);
     }
     
-    // Set up Next/Previous buttons
+    
     const nextButton = document.querySelector('.control-button[title="Next"]');
     if (nextButton) {
         nextButton.addEventListener('click', playNextTrack);
@@ -176,24 +175,24 @@ document.addEventListener('DOMContentLoaded', function() {
         shuffleButton.addEventListener('click', toggleShuffle);
     }
     
-    // Set up repeat button
+    
     const repeatButton = document.querySelector('.control-button[title="Repeat"]');
     if (repeatButton) {
         repeatButton.addEventListener('click', toggleRepeat);
     }
     
-    // Volume control setup
+    
     setupVolumeControl();
 
-    // Setup Like Buttons
+    
     document.querySelectorAll('.like-button').forEach(button => {
         button.addEventListener('click', handleLikeSong);
         const trackItem = button.closest('.track-item');
         const textSpan = button.querySelector('.like-button-text');
         const svgIcon = button.querySelector('svg');
 
-        // Initialize button state based on data-is-liked from the parent .track-item,
-        // but only if the data-is-liked attribute is present on the track item.
+        
+        
         if (trackItem && trackItem.dataset.isLiked !== undefined) {
             if (trackItem.dataset.isLiked === 'true') {
                 if (textSpan) textSpan.textContent = 'Unlike';
@@ -216,35 +215,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Function to toggle shuffle mode
+
 function toggleShuffle() {
     const shuffleButton = document.querySelector('.control-button[title="Shuffle"]');
     
-    // Toggle the state
+    
     isShuffleActive = !isShuffleActive;
     
     if (isShuffleActive) {
-        // Add active class to the button (for styling)
+        
         if (shuffleButton) shuffleButton.classList.add('active');
         
-        // Store original tracks list if we haven't already
+        
         if (originalTracksList.length === 0) {
             originalTracksList = [...tracksList];
         }
         
-        // Create a shuffled copy of the tracks
+        
         shuffleTracksList();
         
         console.log("Shuffle mode enabled");
     } else {
-        // Remove active class
+        
         if (shuffleButton) shuffleButton.classList.remove('active');
         
-        // Restore original tracks order
+        
         if (originalTracksList.length > 0) {
             tracksList = [...originalTracksList];
             
-            // Update current track index to match the new order
+            
             if (currentTrackId) {
                 currentTrackIndex = tracksList.findIndex(track => track.id === currentTrackId);
             }
@@ -254,21 +253,21 @@ function toggleShuffle() {
     }
 }
 
-// Function to create a shuffled version of the tracks list
+
 function shuffleTracksList() {
-    // Create a copy of the original list
+    
     shuffledTracksList = [...tracksList];
     
-    // Fisher-Yates shuffle algorithm
+    
     for (let i = shuffledTracksList.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledTracksList[i], shuffledTracksList[j]] = [shuffledTracksList[j], shuffledTracksList[i]];
     }
     
-    // Update the main tracks list to use the shuffled order
+    
     tracksList = shuffledTracksList;
     
-    // Update current track index to match the new shuffled order
+    
     if (currentTrackId) {
         currentTrackIndex = tracksList.findIndex(track => track.id === currentTrackId);
     }
@@ -276,33 +275,33 @@ function shuffleTracksList() {
     console.log("Tracks have been shuffled, new order:", tracksList.map(t => t.title));
 }
 
-// Function to toggle repeat mode
+
 function toggleRepeat() {
     const repeatButton = document.querySelector('.control-button[title="Repeat"]');
     
-    // Toggle the state
+    
     isRepeatActive = !isRepeatActive;
     
     if (isRepeatActive) {
-        // Add active class to the button (for styling)
+        
         if (repeatButton) repeatButton.classList.add('active');
         console.log("Repeat mode enabled");
     } else {
-        // Remove active class
+        
         if (repeatButton) repeatButton.classList.remove('active');
         console.log("Repeat mode disabled");
     }
 }
 
-// Modify the handleTrackEnd function to incorporate repeat functionality
+
 function handleTrackEnd() {
     console.log("Track ended.");
     
-    // If repeat is active, replay the current track
+    
     if (isRepeatActive && currentTrackId) {
         console.log("Repeat mode active, replaying current track");
         
-        // Get the current track and replay it
+        
         const currentTrack = tracksList[currentTrackIndex];
         if (currentTrack) {
             playTrack(
@@ -316,12 +315,12 @@ function handleTrackEnd() {
         }
     }
     
-    // Normal next track behavior (keep your existing code)
+    
     console.log("Moving to next track");
     
-    // Find the next track in the list
+    
     if (currentTrackIndex >= 0 && currentTrackIndex < tracksList.length - 1) {
-        // Play the next track
+        
         currentTrackIndex++;
         const nextTrack = tracksList[currentTrackIndex];
         console.log(`Auto-playing next track: ${nextTrack.title} (index: ${currentTrackIndex})`);
@@ -333,7 +332,7 @@ function handleTrackEnd() {
             nextTrack.audioUrl
         );
     } else {
-        // No next track available, reset player
+        
         console.log("No next track available. Playback stopped.");
         const progressBar = document.getElementById('progress');
         const currentTimeEl = document.getElementById('current-time');
@@ -344,22 +343,22 @@ function handleTrackEnd() {
     }
 }
 
-// Modify buildTracksList to store the original order
+
 function buildTracksList() {
     tracksList = [];
     console.log("Building tracks list...");
     
-    // Get all track items from the page
+    
     const trackElements = document.querySelectorAll('.track-item');
     console.log(`Found ${trackElements.length} track elements on the page`);
     
     trackElements.forEach((trackElement, index) => {
-        // Extract the onclick attribute to get the track data
+        
         const onclickAttr = trackElement.getAttribute('onclick');
         if (onclickAttr && onclickAttr.startsWith('playTrack(')) {
             try {
-                // Parse the arguments from the onclick attribute with more robust regex
-                // This handles different formats of the playTrack function call
+                
+                
                 const regex = /playTrack\(['"]([^'"]*)['"]\s*,\s*['"]([^'"]*)['"]\s*,\s*['"]([^'"]*)['"]\s*,\s*['"]([^'"]*)['"]\s*,\s*([^)]*)\)/;
                 const match = onclickAttr.match(regex);
                 
@@ -387,13 +386,13 @@ function buildTracksList() {
     });
     
     console.log(`Built tracks list with ${tracksList.length} tracks`);
-    console.log(tracksList); // Debug: Log the entire tracks list
+    console.log(tracksList); 
     
-    // Store original track list for shuffle functionality
+    
     originalTracksList = [...tracksList];
 }
 
-// --- Helper Functions ---
+
 function formatTime(seconds) {
     if (isNaN(seconds) || seconds < 0) return "0:00";
     const minutes = Math.floor(seconds / 60);
@@ -401,17 +400,17 @@ function formatTime(seconds) {
     return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
-// --- Update Player UI Function ---
+
 function updatePlayerUI(playing) {
-    // Get elements fresh each time to avoid undefined errors
+    
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
     const playPauseButton = document.querySelector('.play-pause');
     
-    // Update global state without redeclaring
+    
     isPlaying = playing;
     
-    // Update UI elements if they exist
+    
     if (playing) {
         if(playIcon) playIcon.style.display = 'none';
         if(pauseIcon) pauseIcon.style.display = 'block';
@@ -423,7 +422,7 @@ function updatePlayerUI(playing) {
     }
 }
 
-// --- Audio Event Handlers ---
+
 function updateProgress() {
     if (!currentAudio || isNaN(currentAudio.duration) || currentAudio.duration <= 0) return;
     const percentage = (currentAudio.currentTime / currentAudio.duration) * 100;
@@ -444,11 +443,11 @@ function setTotalTime() {
 }
 
 
-// --- Main Play Function ---
+
 function playTrack(id, title, artist, imageUrl, audioUrl) {
     console.log(`playTrack function called! ID: ${id}, Title: ${title}`);
     
-    // Update the current track index when a new track is played
+    
     const trackIndex = tracksList.findIndex(track => track.id === id);
     console.log(`Track index found: ${trackIndex} (Previous index: ${currentTrackIndex})`);
     
@@ -458,7 +457,7 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
         console.warn(`Track ${id} not found in tracks list. This might cause issues with next/previous.`);
     }
     
-    // Get DOM elements when needed
+    
     const playerTitleEl = document.querySelector('.now-playing-title');
     const playerArtistEl = document.querySelector('.now-playing-artist');
     const playerImageEl = document.querySelector('.now-playing-image');
@@ -466,7 +465,7 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
     const currentTimeEl = document.getElementById('current-time');
     const totalTimeEl = document.getElementById('total-time');
 
-    // Check if player elements exist
+    
     if (!playerTitleEl || !playerArtistEl || !playerImageEl) {
         console.error("Essential player UI elements not found!");
         return;
@@ -475,7 +474,7 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
     console.log(`Attempting to play track: ${title} by ${artist} (ID: ${id})`);
     console.log(`Audio URL: ${audioUrl}`);
 
-    // Check if a valid audio URL is provided
+    
     if (!audioUrl || audioUrl === 'null' || audioUrl === 'None') {
         console.warn("No valid audio URL provided for this track.");
         playerTitleEl.textContent = title;
@@ -501,7 +500,7 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
         return;
     }
 
-    // Update Player Display
+    
     playerTitleEl.textContent = title;
     playerArtistEl.textContent = artist;
     
@@ -513,7 +512,7 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
     playerImageEl.style.backgroundSize = 'cover';
     playerImageEl.innerHTML = '';
 
-    // Handle Resume Play case
+    
     if (currentAudio && currentTrackId === id && currentAudio.paused) {
         currentAudio.play().then(() => {
             updatePlayerUI(true);
@@ -522,7 +521,7 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
         return;
     }
 
-    // Clean up existing audio if any
+    
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.removeEventListener('timeupdate', updateProgress);
@@ -533,15 +532,15 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
         currentAudio.removeEventListener('pause', handleAudioPause);
     }
 
-    // Create a new Audio object for the new track
+    
     currentAudio = new Audio(audioUrl);
     currentTrackId = id;
     
-    // Apply the user's volume setting to the new audio object
+    
     currentAudio.volume = userVolume;
-    currentAudio.muted = false; // Ensure it's not muted by default
+    currentAudio.muted = false; 
 
-    // Add event listeners
+    
     currentAudio.addEventListener('timeupdate', updateProgress);
     currentAudio.addEventListener('loadedmetadata', setTotalTime);
     currentAudio.addEventListener('ended', handleTrackEnd);
@@ -549,7 +548,7 @@ function playTrack(id, title, artist, imageUrl, audioUrl) {
     currentAudio.addEventListener('play', handleAudioPlay);
     currentAudio.addEventListener('pause', handleAudioPause);
 
-    // Attempt to play
+    
     currentAudio.play().then(() => {
         updatePlayerUI(true);
         console.log("Playback started with volume:", currentAudio.volume);
@@ -611,7 +610,7 @@ function playPreviousTrack() {
     }
 }
 
-// Toggle play/pause
+
 function togglePlayPause() {
     if (!currentAudio || !currentAudio.src || currentAudio.src === window.location.href) {
         console.log("No valid track loaded to play/pause.");
@@ -635,7 +634,7 @@ function togglePlayPause() {
     }
 }
 
-// Handle progress bar click for seeking
+
 function handleProgressBarClick(e) {
     if (!currentAudio || isNaN(currentAudio.duration) || currentAudio.duration <= 0 || !currentAudio.seekable || currentAudio.seekable.length === 0) {
         console.log("Cannot seek: No audio, duration invalid, or not seekable.");
@@ -662,7 +661,7 @@ function handleProgressBarClick(e) {
 
 
 
-// Setup volume controls
+
 function setupVolumeControl() {
     const volumeButton = document.querySelector('.volume-button');
     const volumeIcon = document.getElementById('volume-icon');
@@ -672,7 +671,7 @@ function setupVolumeControl() {
     if (volumeButton && volumeBar) {
         let isMuted = false;
         
-        // Volume bar click handler
+        
         volumeBar.addEventListener('click', function(e) {
             if (!currentAudio) return;
             
@@ -680,10 +679,10 @@ function setupVolumeControl() {
             const clickPos = e.clientX - rect.left;
             const newVolume = Math.max(0, Math.min(1, clickPos / rect.width));
             
-            // Update our global volume variable
+            
             userVolume = newVolume;
             
-            // Apply to current audio
+            
             currentAudio.volume = newVolume;
             currentAudio.muted = false;
             
@@ -691,7 +690,7 @@ function setupVolumeControl() {
             updateVolumeUI();
         });
         
-        // Mute toggle
+        
         volumeButton.addEventListener('click', function() {
             if (!currentAudio) return;
             
@@ -709,7 +708,7 @@ function setupVolumeControl() {
             updateVolumeUI();
         });
         
-        // Update volume UI based on current audio state
+        
         function updateVolumeUI() {
             if (!currentAudio) return;
             
