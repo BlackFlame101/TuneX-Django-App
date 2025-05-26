@@ -6,17 +6,48 @@
 ## Sommaire
 
 1.  [Introduction](#introduction)
-2.  [Fonctionnalités](#fonctionnalités)
-3.  [Technologies Utilisées](#technologies-utilisées)
-4.  [Structure du Projet](#structure-du-projet)
-5.  [Installation](#installation)
-6.  [Utilisation](#utilisation)
-7.  [Améliorations Futures](#améliorations-futures)
-8.  [Contributeurs](#contributeurs)
+2.  [Méthodologie Adoptée](#méthodologie-adoptée)
+3.  [Modélisation UML](#modélisation-uml)
+4.  [Fonctionnalités](#fonctionnalités)
+5.  [Technologies Utilisées](#technologies-utilisées)
+6.  [Structure du Projet](#structure-du-projet)
+7.  [Installation](#installation)
+8.  [Utilisation](#utilisation)
+9.  [Améliorations Futures](#améliorations-futures)
+10. [Contributeurs](#contributeurs)
 
 ## Introduction
 
 TuneX est une application web développée pour le cours EMSI 3IIR20, simulant les fonctionnalités de base de services comme Spotify. Elle permet la recherche de musique, l'écoute d'extraits, la gestion des favoris et la création de playlists personnelles, en utilisant l'API Deezer. Ce projet met en œuvre les principes du développement web avec Django (backend) et HTML, CSS, JavaScript (frontend).
+
+## Méthodologie Adoptée
+
+*Modèle en Cascade*
+
+- Spécification des besoins  
+- Conception UML  
+- Développement  
+- Tests  
+- Déploiement  
+
+## Modélisation UML
+
+### Diagramme de cas d’utilisation  
+![Diagramme de cas d'utilisation de TuneX](static/diagrams/use-case.png)
+
+### Diagramme de classes  
+![Diagramme de classes de TuneX](static/diagrams/class-diagram.png)
+
+### Diagrammes de Séquence
+
+#### Séquence : Rechercher de la Musique
+![Séquence : Rechercher de la Musique](static/diagrams/search_music_sequence_diagram.png)
+
+#### Séquence : Se Connecter
+![Séquence : Se Connecter](static/diagrams/login_sequence_diagram.png)
+
+#### Séquence : Ajouter une Chanson à une Playlist
+![Séquence : Ajouter une Chanson à une Playlist](static/diagrams/add_song_to_playlist_sequence_diagram.png)
 
 ## Fonctionnalités
 
@@ -102,4 +133,3 @@ TuneX est une application web développée pour le cours EMSI 3IIR20, simulant l
 
 * Benouari Badr-Eddine
 * IBNOUCHEIKH Ilyass
-
