@@ -2,7 +2,7 @@
 https://badrdev.pythonanywhere.com/
 
 # Rapport:
-Rapport.pdf
+[📄Rapport.pdf](static/Rapport.pdf)
 
 # TuneX - Clone de Spotify (Projet de Classe)
 
